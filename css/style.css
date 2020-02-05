@@ -25,6 +25,7 @@ body > div {
 #wrapper {
   height: 100%;
   width: 100vw;
+  transition: filter .2s ease;
 }
 
 #wrapper .scroll-content {
@@ -266,6 +267,15 @@ body > div {
   align-items: center;
 }
 
+#modal.active ~ #wrapper,
+#modal.active ~ #search {
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
+}
+
 #modal.active .content {
   animation: fadeIn .3s forwards .2s;
 }
@@ -456,6 +466,7 @@ body > div {
   top: 3vw;
   left: 3vw;
   box-shadow: 0 0 2vw rgba(0,0,0,.1);
+  transition: filter .2s ease;
 }
 
 #search:before {

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Час створення: Лют 05 2020 р., 17:15
+-- Час створення: Лют 05 2020 р., 20:33
 -- Версія сервера: 10.3.18-MariaDB-50+deb10u1.cba
 -- Версія PHP: 7.1.33
 
@@ -17,8 +17,27 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- База даних: `bestkyivfamilytree`
+-- База даних: `dimamyhal`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Структура таблиці `family`
+--
+
+CREATE TABLE `family` (
+  `id` int(255) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `logo` varchar(255) DEFAULT NULL
+) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+
+--
+-- Дамп даних таблиці `family`
+--
+
+INSERT INTO `family` (`id`, `name`, `logo`) VALUES
+(1, 'Royal Family', 'royal.png');
 
 -- --------------------------------------------------------
 
@@ -62,6 +81,12 @@ INSERT INTO `member` (`id`, `name`, `image`, `status`, `active`, `rec_season`, `
 --
 
 --
+-- Індекси таблиці `family`
+--
+ALTER TABLE `family`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Індекси таблиці `member`
 --
 ALTER TABLE `member`
@@ -73,6 +98,11 @@ ALTER TABLE `member`
 -- AUTO_INCREMENT для збережених таблиць
 --
 
+--
+-- AUTO_INCREMENT для таблиці `family`
+--
+ALTER TABLE `family`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 --
 -- AUTO_INCREMENT для таблиці `member`
 --
