@@ -8,13 +8,16 @@ const blackBG = modal.querySelector('.blackBG'); //темний фон за сп
 
 //закрити спливаюче вікно при кліку на темний фон
 blackBG.onclick = function() {
-  modal.classList.remove('active');
+  modal.className = '';
 };
 
 //відкрити спливаюче вікно з даними що є в об'єкті memberData
 function openModal(memberData) {
   //встановлення зображення
-  modal.querySelector('.picture img').src = 'img/members/' + (memberData.image || 'default.jpg');
+  if(memberData.image)
+    modal.querySelector('.picture img').src = 'img/members/' + memberData.image;
+  else
+    modal.classList.add('noImage');
 
   //встановлення імені
   const modalName = modal.querySelector('.name');
@@ -77,9 +80,11 @@ class FamilyTree {
     //блок з зображенням мембера
     const picture = document.createElement('div');
     picture.classList.add('picture');
-    const image = document.createElement('img');
-    image.src = 'img/members/' + (memberData.image || 'default.jpg');
-    picture.append(image);
+    if(memberData.image) {
+      const image = document.createElement('img');
+      image.src = 'img/members/' + memberData.image;
+      picture.append(image);
+    };
     description.append(picture);
 
     //блок з іменем мембера
@@ -102,7 +107,7 @@ class FamilyTree {
     return member;
   }
   
-  openChildrenBlock(parent) {
+  toggleChildrenBlock(parent) {
     parent.querySelector('.children').classList.toggle('visible');
     const opener = parent.querySelector('.opener');
     opener.textContent = opener.textContent == '+' ? '-' : '+';
@@ -125,7 +130,7 @@ class FamilyTree {
     opener.textContent = '+';
     opener.onclick = (function(e) {
       e.stopPropagation();
-      this.openChildrenBlock(parent);
+      this.toggleChildrenBlock(parent);
     }).bind(this);
     
     parent.append(opener);

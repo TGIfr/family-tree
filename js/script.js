@@ -51,7 +51,8 @@ const searchResultsScrollBar = Scrollbar.init(searchResults, {
   damping: .13,
   thumbMinSize: 10,
   renderByPixels: false,
-  continuousScrolling: false
+  continuousScrolling: false,
+  alwaysShowTracks: true
 });
 
 //при введені символу в поле вводу
@@ -66,10 +67,10 @@ searchInput.oninput = function() {
       const answers = JSON.parse(response);
       //виведення списку результатів
       [].forEach.call(answers, createAnswerBlock);
+      
+      //оновлення скролбару для результатів
+      searchResultsScrollBar.update();
     });
-    
-    //оновлення скролбару для результатів
-    searchResultsScrollBar.update();
   };
 };
 
