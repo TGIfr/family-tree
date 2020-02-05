@@ -3,6 +3,7 @@
 $connection = new mysqli("localhost", "dima", "12345", "bestkyivfamilytree");
 //$connection = new mysqli("mysql.zzz.com.ua", "dimamyhal", "M942d245s", "dimamyhal");
 if($connection->connect_error) die("Connection failed: " . $conn->connect_error);
+
 function createMember($memberData, $dbconn) {
   $member = array(
     "id" => $memberData["id"],
