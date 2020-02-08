@@ -37,18 +37,30 @@ function openModal(memberData) {
   //встановлення сезону і року рекрутменту
   const recruitment = modal.querySelector('.recruitment');
   recruitment.className = 'recruitment';
-  recruitment.classList.add(recSeasons[memberData.rec_season].toLocaleLowerCase());
-  recruitment.querySelector('.value').textContent = recSeasons[memberData.rec_season] + ' ' + memberData.rec_year;
+  if(memberData.rec_season || memberData.rec_year) {
+    
+    if(memberData.rec_season)
+      recruitment.classList.add(recSeasons[memberData.rec_season].toLocaleLowerCase());
+    
+    var value = recruitment.querySelector('.value');
+    if(memberData.rec_season) {
+      value.textContent = recSeasons[memberData.rec_season];
+      if(memberData.rec_year) value.textContent += ' ';
+    }
+    if(memberData.rec_year) value.textContent += memberData.rec_year;
+  }
+  else
+    recruitment.classList.add('hidden');
 
   //встановлення назви та логотипу сім'ї
   const family = modal.querySelector('.family');
+  family.className = 'family';
   if(memberData.familyName) {
-    family.className = 'family';
     family.querySelector('.logo img').src = 'img/families/' + memberData.familyLogo;
     family.querySelector('.value').textContent = memberData.familyName;
   }
   else
-    family.style.display = 'none';
+    family.classList.add('hidden');
 
   modal.classList.add('active');
 }
@@ -108,15 +120,29 @@ class FamilyTree {
   }
   
   toggleChildrenBlock(parent) {
-    parent.querySelector('.children').classList.toggle('visible');
-    const opener = parent.querySelector('.opener');
-    opener.textContent = opener.textContent == '+' ? '-' : '+';
-    
-    //затримка для анімації
-    setTimeout(function() {
-      //оновлення скролбарів при зміні розміру дерева
-      pageScrollBar.update();
-    }, 300);
+    var childrenBlock = parent.querySelector('.children');
+    if(childrenBlock) {
+      childrenBlock.classList.toggle('visible');
+      var opener = parent.querySelector('.opener');
+      opener.textContent = opener.textContent == '+' ? '-' : '+';
+
+      if(!childrenBlock.classList.contains('visible')) {
+        const posterity = childrenBlock.querySelectorAll('.member');
+        [].forEach.call(posterity, function(childrenMember) {
+          childrenBlock = childrenMember.querySelector('.children');
+          if(childrenBlock) {
+            childrenBlock.classList.remove('visible');
+            childrenMember.querySelector('.opener').textContent = '+';
+          }
+        });
+      }
+
+      //затримка для анімації
+      setTimeout(function() {
+        //оновлення скролбарів при зміні розміру дерева
+        pageScrollBar.update();
+      }, 300);
+    };
   };
   
   //створення блоку з дітьми мембера

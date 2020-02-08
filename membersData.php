@@ -19,8 +19,9 @@ function createMember($memberData, $dbconn) {
   
   $children = $dbconn->query("SELECT member.*, family.name as family_name, family.logo as family_logo
     FROM member
-    INNER JOIN family ON member.family_id = family.id
-    WHERE mentor_id = ".$memberData["id"]);
+    LEFT JOIN family ON member.family_id = family.id
+    WHERE mentor_id = ".$memberData["id"]."
+    ORDER BY member.active DESC, member.status DESC, member.name");
   
   if($children->num_rows > 0) {
     $member["children"] = [];
@@ -35,15 +36,16 @@ function createMember($memberData, $dbconn) {
 $familyTree = array();
 $firstGeneration = $connection->query("SELECT member.*, family.name as family_name, family.logo as family_logo
     FROM member
-    INNER JOIN family ON member.family_id = family.id
-    WHERE mentor_id IS NULL");
+    LEFT JOIN family ON member.family_id = family.id
+    WHERE mentor_id IS NULL
+    ORDER BY member.name");
 
 if($firstGeneration->num_rows > 0) {
   while($memberData = $firstGeneration->fetch_assoc()) {
     $member = createMember($memberData, $connection);
     $familyTree[] = $member;
   }
-}
+};
 
 echo json_encode($familyTree);
 

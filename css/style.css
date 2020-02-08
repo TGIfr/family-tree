@@ -31,14 +31,13 @@ body > div {
 #wrapper .scroll-content {
   text-align: center;
   height: 100%;
+/*  cursor: grab;*/
 }
 
 #familyTree {
   font-family: 'Tahoma';
-  min-height: 100%;
   display: inline-flex;
-  align-items: center;
-  padding: 6vw 4vw 2vw;
+  padding: 30vh 4vw 6vw;
   box-sizing: border-box;
 }
 
@@ -86,6 +85,15 @@ body > div {
   left: 50%;
   bottom: 100%;
   transition: all .3s ease;
+}
+
+#familyTree > .member {
+  border-right: 1px solid #eee;
+  padding: 2vw 2vw 0;
+}
+
+#familyTree > .member:last-child {
+  border: none;
 }
 
 #familyTree > .member:before,
@@ -169,6 +177,7 @@ body > div {
   font-weight: bold;
   text-align: center;
   line-height: 1.2vw;
+  overflow: hidden;
   transition: all .3s ease;
 }
 
@@ -224,6 +233,7 @@ body > div {
 #familyTree .children:not(.visible) .member .name,
 #familyTree .children:not(.visible) .member .status {
   font-size: 0;
+  margin: 0;
 }
 
 #familyTree .children:not(.visible) .member .opener {
@@ -305,6 +315,10 @@ body > div {
   padding-top: 2vw;
 }
 
+#modal .hidden {
+  display: none!important;
+}
+
 #modal .name {
   display: inline-block;
   position: relative;
@@ -326,7 +340,7 @@ body > div {
 }
 
 #modal .status {
-  margin: 2.5vw 0 4vw;
+  margin: 2.5vw 0 2vw;
   width: 100%;
   display: flex;
   justify-content: space-around;
@@ -385,6 +399,10 @@ body > div {
   justify-content: space-between;
 }
 
+#modal .row > div:not(.hidden) {
+  margin-top: 2vw;
+}
+
 #modal .caption {
   font: 1vw 'Tahoma';
   color: #777;
@@ -412,6 +430,7 @@ body > div {
   width: 2.5vw;
   height: 2.5vw;
   background-repeat: no-repeat;
+  background-position: center;
   background-size: contain;
 }
 
@@ -425,11 +444,6 @@ body > div {
 
 #modal .family {
   display: flex;
-  flex-direction: column;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  height: 3vw;
-  width: 11vw;
 }
 
 #modal .family .logo {
@@ -473,7 +487,7 @@ body > div {
   content: '';
   position: absolute;
   right: 1vw;
-  top: .8vw;
+  top: 1vw;
   display: block;
   width: 1.5vw;
   height: 1.5vw;
@@ -514,11 +528,11 @@ body > div {
 
 @media screen and (max-width: 800px) {
   #familyTree {
-    padding: 20vw 10vw 0;
+    padding: 30vh 10vw 10vw;
   }
   
   #familyTree > .member {
-    margin: 16vw 8vw;
+    padding: 8vw 8vw 2vw;
   }
   
   #familyTree .member:before {
@@ -578,6 +592,10 @@ body > div {
     padding: 18vw 6vw 6vw;
   }
   
+  #modal.noImage .content {
+    padding-top: 6vw;
+  }
+  
   #modal .picture {
     width: 30vw;
     height: 30vw;
@@ -594,7 +612,7 @@ body > div {
   }
   
   #modal .status {
-    margin: 7.5vw 0 12vw;
+    margin: 7.5vw 0 4vw;
   }
   
   #modal .status .dot {
@@ -634,9 +652,8 @@ body > div {
     height: 7.5vw;
   }
   
-  #modal .family {
-    height: 9vw;
-    width: 33vw;
+  #modal .row > div:not(.hidden) {
+    margin-top: 5vw;
   }
   
   #modal .family .logo {
@@ -653,7 +670,7 @@ body > div {
   
   #search:before {
     right: 4vw;
-    top: 3.2vw;
+    top: 3.5vw;
     width: 6vw;
     height: 6vw;
   }

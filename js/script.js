@@ -56,12 +56,15 @@ const searchResultsScrollBar = Scrollbar.init(searchResults, {
 });
 
 //при введені символу в поле вводу
+var waiting = false;
 searchInput.oninput = function() {
   //очистити попередні результати
   searchResultsList.innerHTML = '';
   
-  //якщо поле вводу не пусте
-  if(searchInput.value) {
+  //якщо поле вводу не пусте і не очікується відповідь від попереднього запиту
+  if(searchInput.value && !waiting) {
+    waiting = true;
+    
     //надсилання запиту для отримання даних про мемберів які мають в своєму імені текст з поля вводу
     ajaxQuery('getMembersId.php', 'name='+searchInput.value, function(response) {
       const answers = JSON.parse(response);
@@ -70,6 +73,8 @@ searchInput.oninput = function() {
       
       //оновлення скролбару для результатів
       searchResultsScrollBar.update();
+      
+      waiting = false;
     });
   };
 };
@@ -106,7 +111,7 @@ function findMember(id) {
   //поки існує батьківський блок
   while(parentBlock) {
     //якщо блок дітей скритий то відкрити його
-    if(!childrenBlock.classList.contains('visible')) familyTree.openChildrenBlock(parentBlock);
+    if(!childrenBlock.classList.contains('visible')) familyTree.toggleChildrenBlock(parentBlock);
     
     //перехід на попереднє покоління
     childrenBlock = parentBlock.parentNode;
