@@ -1,7 +1,6 @@
 <?php
-$connection = new mysqli("localhost", "dima", "12345", "bestkyivfamilytree");
-//$connection = new mysqli("mysql.zzz.com.ua", "dimamyhal", "M942d245s", "dimamyhal");
-if($connection->connect_error) die("Connection failed: " . $conn->connect_error);
+
+$connection = (include 'DBconnection.php');
 
 if(!isset($_POST[name])) echo 'error';
 else $name = quotemeta($_POST[name]);
