@@ -1,7 +1,8 @@
 'use script';
 
 //налаштування скролбару
-const pageScrollBar = Scrollbar.init(document.querySelector('#wrapper'), {
+const wrapper = document.getElementById('wrapper');
+const pageScrollBar = Scrollbar.init(wrapper, {
   damping: .13,
   thumbMinSize: 10,
   renderByPixels: false,
@@ -136,3 +137,31 @@ function resetHighlighted() {
 
 //скинути виділення при кліку
 document.addEventListener('click', resetHighlighted);
+
+
+//перетягування полотна мишкою
+if(window.innerWidth > 800) { //лише для десктопу
+  var clicked = false;
+  var clickCoords = {x: 0, y:0}
+  wrapper.onmousedown = function(e) {
+    wrapper.classList.add('grabbing');
+    clicked = true;
+    clickCoords.x = e.pageX;
+    clickCoords.y = e.pageY;
+  };
+
+  wrapper.onmouseup = wrapper.onmouseleave = function() {
+    wrapper.classList.remove('grabbing');
+    clicked = false;
+  };
+
+  wrapper.onmousemove = function(e) {
+    if(clicked) {
+      const offsetX = pageScrollBar.offset.x + clickCoords.x - e.pageX;
+      const offsetY = pageScrollBar.offset.y + clickCoords.y - e.pageY;
+      clickCoords.x = e.pageX;
+      clickCoords.y = e.pageY;
+      pageScrollBar.scrollTo(offsetX, offsetY, 0);
+    }
+  };
+};

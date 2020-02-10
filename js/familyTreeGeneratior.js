@@ -112,7 +112,12 @@ class FamilyTree {
     description.append(status);
     
     //відкрити спливаюче вікно з інформацією при кліку на опис мембера
-    description.onclick = openModal.bind(null, memberData);
+    description.onclick = function(e) {
+      e.stopPropagation();
+      openModal(memberData);
+    };
+    
+    description.onmousedown = function(e) {e.stopPropagation()};
     
     member.append(description);
     
@@ -158,6 +163,8 @@ class FamilyTree {
       e.stopPropagation();
       this.toggleChildrenBlock(parent);
     }).bind(this);
+    
+    opener.onmousedown = function(e) {e.stopPropagation()};
     
     parent.append(opener);
     

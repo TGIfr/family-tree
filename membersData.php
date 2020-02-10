@@ -21,7 +21,7 @@ function createMember($memberData, $dbconn) {
     FROM member
     LEFT JOIN family ON member.family_id = family.id
     WHERE mentor_id = ".$memberData["id"]."
-    ORDER BY member.active DESC, member.status DESC, member.name");
+    ORDER BY member.rec_year, member.rec_season, member.active DESC, member.status DESC, member.name");
   
   if($children->num_rows > 0) {
     $member["children"] = [];

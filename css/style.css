@@ -25,13 +25,18 @@ body > div {
 #wrapper {
   height: 100%;
   width: 100vw;
+  cursor: grab;
   transition: filter .2s ease;
+}
+
+#wrapper.grabbing {
+  user-select: none;
+  cursor: grabbing;
 }
 
 #wrapper .scroll-content {
   text-align: center;
   height: 100%;
-/*  cursor: grab;*/
 }
 
 #familyTree {
