@@ -56,7 +56,7 @@ function openModal(memberData) {
   const family = modal.querySelector('.family');
   family.className = 'family';
   if(memberData.familyName) {
-    family.querySelector('.logo img').src = 'img/families/' + memberData.familyLogo;
+    family.querySelector('.logo').style.backgroundImage = memberData.familyLogo ? 'url(../img/families/' + memberData.familyLogo + ')' : 'none';
     family.querySelector('.value').textContent = memberData.familyName;
   }
   else
