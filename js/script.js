@@ -126,7 +126,7 @@ function findMember(id) {
       offsetLeft: (window.innerWidth - memberBlockDescription.offsetWidth)/2, //центрування екрану по горизонталі
       offsetTop: (window.innerHeight - memberBlockDescription.offsetHeight)/2 //центрування екрану по вертикалі
     });
-  }, 300);
+  }, 700);
 };
 
 //скидання виділення певного мембера

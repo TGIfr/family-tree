@@ -4,30 +4,32 @@ const statuses = ['Observer', 'Baby', 'Full', 'Alumni']; //назви стату
 const recSeasons = ['Spring', 'Autumn']; //назви сезонів рекрутменту
 
 const modal = document.getElementById('modal'); //спливаюче вікно 
+var content;
 const blackBG = modal.querySelector('.blackBG'); //темний фон за спливаючим вікном
 
 //закрити спливаюче вікно при кліку на темний фон
 blackBG.onclick = function() {
   modal.className = '';
+  content.classList.remove('active');
+  content.classList.remove('hasImage');
 };
 
-//відкрити спливаюче вікно з даними що є в об'єкті memberData
-function openModal(memberData) {
+function displayMemberData(memberData) {
   //встановлення зображення
-  if(memberData.image)
-    modal.querySelector('.picture img').src = 'img/members/' + memberData.image;
-  else
-    modal.classList.add('noImage');
+  if(memberData.image) {
+    content.querySelector('.picture img').src = 'img/members/' + memberData.image;
+    content.classList.add('hasImage');
+  };
 
   //встановлення імені
-  const modalName = modal.querySelector('.name');
+  const modalName = content.querySelector('.name');
   modalName.textContent = memberData.name;
 
   //встановлення активності мембера
   memberData.active ? modalName.classList.add('active') : modalName.classList.remove('active');
 
   //встановлення статусу бестіка
-  const statusDots = modal.querySelectorAll('.status .dot');
+  const statusDots = content.querySelectorAll('.status .dot');
   [].forEach.call(statusDots, function(dot, i) {
     dot.className = 'dot';
     if(i < memberData.status) dot.classList.add('filled');
@@ -35,13 +37,13 @@ function openModal(memberData) {
   });
 
   //встановлення сезону і року рекрутменту
-  const recruitment = modal.querySelector('.recruitment');
+  const recruitment = content.querySelector('.recruitment');
   recruitment.className = 'recruitment';
   if(memberData.rec_season || memberData.rec_year) {
-    
+
     if(memberData.rec_season)
       recruitment.classList.add(recSeasons[memberData.rec_season].toLocaleLowerCase());
-    
+
     var value = recruitment.querySelector('.value');
     if(memberData.rec_season) {
       value.textContent = recSeasons[memberData.rec_season];
@@ -53,7 +55,7 @@ function openModal(memberData) {
     recruitment.classList.add('hidden');
 
   //встановлення назви та логотипу сім'ї
-  const family = modal.querySelector('.family');
+  const family = content.querySelector('.family');
   family.className = 'family';
   if(memberData.familyName) {
     family.querySelector('.logo').style.backgroundImage = memberData.familyLogo ? 'url(../img/families/' + memberData.familyLogo + ')' : 'none';
@@ -61,7 +63,21 @@ function openModal(memberData) {
   }
   else
     family.classList.add('hidden');
+}
 
+//відкрити спливаюче вікно з даними що є в об'єкті memberData
+function openModal(memberData, type) {
+  content = modal.querySelector('.'+type);
+  content.classList.add('active');
+  
+  switch(type) {
+    case 'memberInfo': displayMemberData(memberData); break;
+    case 'removeConfirmation': console.log(1); break;
+    case 'editInfo': console.log(1); break;
+    case 'newMember': console.log(1); break;
+    default: console.log('error')
+  };
+  
   modal.classList.add('active');
 }
 
@@ -114,7 +130,28 @@ class FamilyTree {
     //відкрити спливаюче вікно з інформацією при кліку на опис мембера
     description.onclick = function(e) {
       e.stopPropagation();
-      openModal(memberData);
+      openModal(memberData, 'memberInfo');
+    };
+    
+    if(HR_MODE) {
+      const settings = document.createElement('div');
+      settings.classList.add('settings');
+      
+      const changeParent = document.createElement('div');
+      changeParent.classList.add('changeParent');
+      settings.append(changeParent);
+      
+      const removeMember = document.createElement('div');
+      removeMember.classList.add('removeMember');
+      settings.append(removeMember);
+      
+      if(memberData.status == 2 && memberData.active) {
+        const addChild = document.createElement('div');
+        addChild.classList.add('addChild');
+        settings.append(addChild);
+      }
+      
+      description.append(settings);
     };
     
     description.onmousedown = function(e) {e.stopPropagation()};
