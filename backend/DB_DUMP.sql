@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Хост: 127.0.0.1:3306
--- Час створення: Лют 11 2020 р., 20:59
+-- Час створення: Бер 21 2020 р., 15:17
 -- Версія сервера: 5.6.41
 -- Версія PHP: 7.0.32
 
@@ -31,8 +31,9 @@ SET time_zone = "+00:00";
 CREATE TABLE `family` (
   `id` int(255) NOT NULL,
   `name` varchar(255) NOT NULL,
-  `logo` varchar(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  `logo` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп даних таблиці `family`
@@ -57,8 +58,11 @@ CREATE TABLE `member` (
   `rec_season` int(1) DEFAULT NULL,
   `rec_year` year(4) DEFAULT NULL,
   `mentor_id` int(255) DEFAULT NULL,
-  `family_id` int(255) DEFAULT NULL
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+  `family_id` int(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `children_mentor_foreign` (`mentor_id`),
+  KEY `member_family_foreign` (`family_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Дамп даних таблиці `member`
@@ -323,29 +327,7 @@ INSERT INTO `member` (`id`, `name`, `image`, `status`, `active`, `rec_season`, `
 (257, 'Івашкіна Олена', NULL, 3, 0, 0, 2002, 100, NULL),
 (259, 'Маша Шкулепова', 'masha_shkulepova.jpg', 1, 1, 1, 2019, 69, NULL);
 
---
--- Індекси збережених таблиць
---
 
---
--- Індекси таблиці `family`
---
-ALTER TABLE `family`
-  ADD PRIMARY KEY (`id`);
-
---
--- Індекси таблиці `member`
---
-ALTER TABLE `member`
-  ADD PRIMARY KEY (`id`),
-  ADD KEY `mentor` (`mentor_id`),
-  ADD KEY `family` (`family_id`);
-
---
--- AUTO_INCREMENT для збережених таблиць
---
-
---
 -- AUTO_INCREMENT для таблиці `family`
 --
 ALTER TABLE `family`
@@ -356,6 +338,11 @@ ALTER TABLE `family`
 --
 ALTER TABLE `member`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=260;
+COMMIT;
+
+ALTER TABLE `member`
+  ADD CONSTRAINT `children_mentor_foreign` FOREIGN KEY (`mentor_id`) REFERENCES `member` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `member_family_foreign` FOREIGN KEY (`family_id`) REFERENCES `family` (`id`) ON DELETE SET NULL;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

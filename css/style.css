@@ -22,19 +22,42 @@ body > div {
   background: transparent;
 }
 
-#wrapper {
+button {
+  cursor: pointer;
+  padding: .5vw 1vw;
+  border: 0;
+  text-transform: uppercase;
+  font: .8vw 'Tahoma';
+  letter-spacing: .1vw;
+  line-height: 150%;
+  background: #53b6f4;
+  border-radius: .5vw;
+  color: #fff;
+  opacity: 1;
+  transition: opacity .2s;
+}
+
+button.red {
+  background: #ff3232;
+}
+
+button:hover {
+  opacity: .8;
+}
+
+.mountBlock {
   height: 100%;
   width: 100vw;
   cursor: grab;
   transition: filter .2s ease;
 }
 
-#wrapper.grabbing {
+.mountBlock.grabbing {
   user-select: none;
   cursor: grabbing;
 }
 
-#wrapper .scroll-content {
+.mountBlock .scroll-content {
   text-align: center;
   height: 100%;
 }
@@ -129,6 +152,11 @@ body > div {
 }
 
 #familyTree .member .picture img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -172,14 +200,21 @@ body > div {
 
 #familyTree .settings {
   position: absolute;
-  top: 0;
-  left: 50%;
-  margin-left: 3.5vw;
-  height: 70%;
+  top: 37%;
+  transform: translateY(-50%);
+  left: 40%;
+  padding-left: 3.5vw;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-content: flex-start;
+  opacity: 0;
+  transition: all .2s;
+}
+
+#familyTree .description:hover .settings {
+  opacity: 1;
+  left: 50%;
 }
 
 #familyTree .settings > div {
@@ -294,7 +329,76 @@ body > div {
   margin: 0;
 }
 
+#familyTree .children:not(.visible) .member .settings > div {
+  height: 0;
+  width: 0;
+  margin: 0;
+}
+
+.searchField {
+  position: relative;
+}
+
+.searchField:before {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  right: 1vw;
+  top: .8vw;
+  display: block;
+  width: 1.5vw;
+  height: 1.5vw;
+  background: url(../img/search.svg) no-repeat;
+  background-size: contain;
+}
+
+.searchField input {
+  position: relative;
+  z-index: 2;
+  padding: 1vw;
+  border-radius: .4vw;
+  border: 1px solid #aaa;
+  width: 20vw;
+}
+
+.searchField .results {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 50vh;
+  overflow: hidden;
+  box-shadow: 0 0 2vw rgba(0,0,0,.1);
+}
+
+.searchField .answer {
+  cursor: pointer;
+  width: 100%;
+  font: .8vw 'Tahoma';
+  padding: .7vw 1vw;
+  box-sizing: border-box;
+  color: #333;
+  background: #fff;
+  transition: background .2s ease;
+}
+
+.searchField .answer:hover {
+  background: #fafafa;
+}
+
+#findMember {
+  position: absolute;
+  top: 3vw;
+  left: 3vw;
+  z-index: 5;
+  box-shadow: 0 0 2vw rgba(0,0,0,.1);
+  transition: filter .2s;
+}
+
 #modal {
+  font: 1.1vw 'Tahoma';
+  color: #333;
   position: fixed;
   z-index: 10;
   width: 100%;
@@ -319,7 +423,6 @@ body > div {
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  width: 30vw;
   border-radius: .8vw;
   background: #fff;
   opacity: 0;
@@ -335,7 +438,7 @@ body > div {
 }
 
 #modal.active ~ #wrapper,
-#modal.active ~ #search {
+#modal.active ~ #findMember {
   -webkit-filter: blur(5px);
   -moz-filter: blur(5px);
   -o-filter: blur(5px);
@@ -347,7 +450,13 @@ body > div {
   animation: fadeIn .3s forwards .2s;
 }
 
-#modal .picture {
+#memberInfo,
+#editMember {
+  width: 30vw;
+}
+
+#memberInfo .picture,
+#editMember .picture {
   display: none;
   border-radius: 50%;
   overflow: hidden;
@@ -359,25 +468,65 @@ body > div {
   transform: translate(-50%, -50%);
 }
 
-#modal .picture img {
+#editMember .picture {
+  cursor: pointer;
+  display: block;
+  background: url('../img/default.jpg') no-repeat center;
+  background-size: cover;
+}
+
+#editMember .picture:after {
+  content: 'CHANGE';
+  text-align: center;
+  font: 500 .8vw 'Tahoma';
+  letter-spacing: .2vw;
+  line-height: 340%;
+  color: #fff;
+  position: absolute;
+  transform: translateY(100%);
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 3vw;
+  background: rgba(0,0,0,.6);
+  transition: transform .2s;
+}
+
+#editMember .picture:hover:after {
+  transform: translateY(0);
+}
+
+#memberInfo .picture img,
+#editMember .picture img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
-#modal .hasImage .picture {
+#editMember .picture img {
+  display: none;
+}
+
+#memberInfo.hasImage .picture,
+#editMember.hasImage .picture img {
   display: block;
 }
 
-#modal .content.hasImage {
+#editMember .imageLoad {
+  display: none;
+}
+
+#memberInfo.hasImage,
+#editMember.content {
   padding-top: 6vw;
 }
 
-#modal .hidden {
+.content .hidden {
   display: none!important;
 }
 
-#modal .name {
+#memberInfo .name,
+#editMember .name {
   display: inline-block;
   position: relative;
   font: bold 2vw 'Tahoma';
@@ -385,7 +534,11 @@ body > div {
   color: #333;
 }
 
-#modal .name.active:before {
+#editMember .name {
+  border: 0;
+}
+
+#memberInfo .name.active:before {
   content: '';
   position: absolute;
   top: 56%;
@@ -397,90 +550,160 @@ body > div {
   background: #75BF1E;
 }
 
-#modal .status {
+#editMember #activityIndicatorInput {
+  display: none;
+}
+
+#editMember .activityIndicator {
+  cursor: pointer;
+  position: absolute;
+  top: 2vw;
+  left: 2vw;
+  padding-left: 2.7vw;
+  color: #aaa;
+}
+
+#editMember .activityIndicator:before {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 55%;
+  transform: translateY(-50%);
+  width: 2vw;
+  height: 1.2vw;
+  border: 1px solid #aaa;
+  border-radius: .6vw;
+  transition: all .2s;
+}
+
+#editMember .activityIndicator:after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: .3vw;
+  top: 55%;
+  transform: translateY(-50%);
+  width: .8vw;
+  height: .8vw;
+  border-radius: 50%;
+  background: #aaa;
+  transition: all .2s;
+}
+
+#editMember #activityIndicatorInput:checked ~ .activityIndicator {
+  color: #75bf1e;
+}
+
+#editMember #activityIndicatorInput:checked ~ .activityIndicator:before {
+  border-color: #75bf1e;
+}
+
+#editMember #activityIndicatorInput:checked ~ .activityIndicator:after {
+  background: #75bf1e;
+  left: 1.1vw;
+}
+
+.content .status {
   margin: 2.5vw 0 2vw;
-  width: 100%;
+  width: 80%;
   display: flex;
   justify-content: space-around;
   align-items: center;
 }
 
-#modal .status .dot {
+.content .status .dot {
   position: relative;
   width: .5vw;
   height: .5vw;
   border-radius: 50%;
   border: 1px solid #aaa;
+  transition: all .1s;
 }
 
-#modal .status .dot:before {
-  content: '';
+
+#editMember .status .dot {
+  cursor: pointer;
+}
+
+.content .status .line {
   height: 1px;
   width: 4vw;
   background: #ccc;
-  position: absolute;
-  top: 50%;
-  left: calc(100% + 1vw);
 }
 
-#modal .status .dot:last-child:before {
+.content .status .dot:last-child:before {
   display: none;
 }
 
-#modal .status .dot.filled {
+.content .status .dot.filled {
   background: #aaa;
 }
 
-#modal .status .dot.active {
+.content .status .dot.active,
+#editMember .status .dot:hover {
   width: .8vw;
   height: .8vw;
   background: #0071b9;
   border: none;
 }
 
-#modal .status .dot span {
+.content .status .dot span {
   position: absolute;
-  top: 150%;
+  top: 0;
+  padding-top: 1vw;
   left: 50%;
   transform: translateX(-50%);
   font: .8vw 'Tahoma';
+  transition: all .1s;
 }
 
-#modal .status .dot.active span {
+.content .status .dot.active span,
+#editMember .status .dot:hover span {
   color: #0071b9;
   font-weight: bold;
+  padding-top: 1.1vw;
 }
 
-#modal .row {
+.content .row {
   display: flex;
+  justify-content: space-between;
   width: 100%;
 }
 
-#modal .row > div:not(.hidden) {
-  flex-grow: 1;
+.content .row > div:not(.hidden) {
   flex-shrink: 0;
-  margin: 2vw 1vw 0;
+  min-width: 40%;
+  margin: 2vw 0 0;
 }
 
-#modal .caption {
+.content .caption {
   font: 1vw 'Tahoma';
   color: #777;
   margin-bottom: .2vw;
 }
 
-#modal .value {
+#editMember .value,
+#memberInfo .value {
   font: 600 1.1vw 'Tahoma';
   color: #333;
   text-transform: uppercase;
 }
 
-#modal .recruitment {
+#editMember .value {
+  white-space: nowrap;
+}
+
+.content .recruitment {
   position: relative;
-  padding-left: 3vw;
   box-sizing: border-box;
 }
 
-#modal .recruitment:before {
+#memberInfo .recruitment {
+  padding-left: 3vw;
+}
+
+#memberInfo .recruitment:before {
   content: '';
   position: absolute;
   left: 0;
@@ -494,25 +717,101 @@ body > div {
   background-size: contain;
 }
 
-#modal .recruitment.autumn:before {
+#memberInfo .recruitment.autumn:before {
   background-image: url(../img/autumn.svg);
 }
 
-#modal .recruitment.spring:before {
+#memberInfo .recruitment.spring:before {
   background-image: url(../img/spring.svg);
 }
 
-#modal .family {
+.content .family {
   display: flex;
 }
 
-#modal .family .logo {
+#memberInfo .family .logo {
   height: 2.5vw;
   width: 2.5vw;
   margin-right: .5vw;
   background-repeat: no-repeat;
   background-size: contain;
   background-position: center;
+}
+
+#editMember .options {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2vw;
+  width: 100%;
+}
+
+#editMember .options button {
+  width: 48%;
+}
+
+#removeConfirmation {
+  text-align: center;
+  width: 25vw;
+}
+
+#removeConfirmation.hasChildren {
+  width: 42vw;
+}
+
+#removeConfirmation .name {
+  font-weight: bold;
+}
+
+#removeConfirmation .options {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 2vw;
+  width: 100%;
+}
+
+#removeConfirmation .options button {
+  width: 48%;
+}
+
+#removeConfirmation.hasChildren .options button {
+  width: 31%;
+}
+
+#removeConfirmation.hasChildren .ifHasNoChildren,
+#removeConfirmation .ifHasChildren {
+  display: none;
+}
+
+#removeConfirmation.hasChildren .ifHasChildren {
+  display: block;
+}
+
+#changeParent .currentParent {
+  text-align: center;
+  margin-bottom: 2vw;
+}
+
+#changeParent .currentParent .value {
+  font-weight: bold;
+}
+
+#changeParent .searchField .results {
+  max-height: 30vh;
+}
+
+#changeParent .options {
+  display: none;
+  margin-top: 1.5vw;
+  width: 100%;
+  justify-content: space-between;
+}
+
+#changeParent.newParent .options {
+  display: flex;
+}
+
+#changeParent .options button {
+  width: 48%;
 }
 
 #modal .blackBG {
@@ -529,58 +828,6 @@ body > div {
 
 #modal.active .blackBG {
   opacity: 1;
-}
-
-#search {
-  position: absolute;
-  z-index: 5;
-  top: 3vw;
-  left: 3vw;
-  box-shadow: 0 0 2vw rgba(0,0,0,.1);
-  transition: filter .2s ease;
-}
-
-#search:before {
-  content: '';
-  position: absolute;
-  right: 1vw;
-  top: 1vw;
-  display: block;
-  width: 1.5vw;
-  height: 1.5vw;
-  background: url(../img/search.svg) no-repeat;
-  background-size: contain;
-}
-
-#search input {
-  padding: 1vw;
-  border-radius: .4vw;
-  border: 1px solid #aaa;
-  width: 20vw;
-}
-
-#search .results {
-  position: relative;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  max-height: 50vh;
-  overflow: hidden;
-}
-
-#search .answer {
-  cursor: pointer;
-  width: 100%;
-  font: .8vw 'Tahoma';
-  padding: .7vw 1vw;
-  box-sizing: border-box;
-  color: #333;
-  background: #fff;
-  transition: background .2s ease;
-}
-
-#search .answer:hover {
-  background: #fafafa;
 }
 
 @media screen and (max-width: 800px) {
