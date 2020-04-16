@@ -1,3 +1,18 @@
+@font-face {
+  font-family: 'Tahoma';
+  src: url(../fonts/tahoma.ttf);
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Tahoma';
+  src: url(../fonts/tahomabd.ttf);
+  font-weight: bold;
+  font-style: normal;
+}
+
+
 body, html {
   overflow: hidden;
   height: 100%;
@@ -188,7 +203,7 @@ button:hover {
 
 #familyTree .member .status {
   font-size: .7vw;
-  font-weight: 600;
+  font-weight: bold;
   color: #777;
   transition: all .3s ease;
 }
@@ -616,6 +631,7 @@ button:hover {
   position: relative;
   width: .5vw;
   height: .5vw;
+  margin: 0 1px;
   border-radius: 50%;
   border: 1px solid #aaa;
   transition: all .1s;
@@ -644,6 +660,7 @@ button:hover {
 #editMember .status .dot:hover {
   width: .8vw;
   height: .8vw;
+  margin: 0;
   background: #0071b9;
   border: none;
 }
@@ -673,21 +690,19 @@ button:hover {
 
 .content .row > div:not(.hidden) {
   flex-shrink: 0;
-  min-width: 40%;
+  width: 50%;
   margin: 2vw 0 0;
 }
 
 .content .caption {
   font: 1vw 'Tahoma';
   color: #777;
-  margin-bottom: .2vw;
 }
 
 #editMember .value,
 #memberInfo .value {
-  font: 600 1.1vw 'Tahoma';
+  font: bold 1.1vw 'Tahoma';
   color: #333;
-  text-transform: uppercase;
 }
 
 #editMember .value {
@@ -707,8 +722,7 @@ button:hover {
   content: '';
   position: absolute;
   left: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  top: .2vw;
   display: block;
   width: 2.5vw;
   height: 2.5vw;
@@ -727,11 +741,14 @@ button:hover {
 
 .content .family {
   display: flex;
+  justify-content: center;
 }
 
 #memberInfo .family .logo {
+  flex-shrink: 0;
   height: 2.5vw;
   width: 2.5vw;
+  margin-top: .2vw;
   margin-right: .5vw;
   background-repeat: no-repeat;
   background-size: contain;
@@ -861,7 +878,8 @@ button:hover {
     width: 3.2vw;
     height: 3.2vw;
     border-width: 1.2vw;
-    margin-left: -14vw;
+    top: 57%;
+    margin-left: -14.8vw;
   }
   
   #familyTree .member .name {
@@ -893,52 +911,56 @@ button:hover {
   #modal .content {
     width: 90vw;
     border-radius: 2.4vw;
-    padding: 18vw 6vw 6vw;
+    padding: 6vw;
   }
   
-  #modal.noImage .content {
-    padding-top: 6vw;
+  #memberInfo.hasImage {
+    padding-top: 18vw;
   }
   
-  #modal .picture {
+  #memberInfo .picture {
     width: 30vw;
     height: 30vw;
   }
   
-  #modal .name {
+  #memberInfo .name {
     font-size: 6vw;
   }
   
-  #modal .name.active:before {
+  #memberInfo .name.active:before {
     left: -4.5vw;
     width: 2.4vw;
     height: 2.4vw;
   }
   
-  #modal .status {
+  .content .status {
     margin: 7.5vw 0 4vw;
   }
   
-  #modal .status .dot {
+  .content .status .dot {
     width: 1.5vw;
     height: 1.5vw;
   }
   
-  #modal .status .dot:before {
-    width: 12vw;
-    left: calc(100% + 3vw);
+  .content .status .line {
+    width: 7vw;
   }
   
-  #modal .status .dot.active {
-    width: 2.4vw;
-    height: 2.4vw;
+  .content .status .dot.active {
+    width: 3vw;
+    height: 3vw;
   }
   
-  #modal .status .dot span {
-    font-size: 2.4vw;
+  .content .status .dot span {
+    padding-top: 3vw;
+    font-size: 3vw;
   }
   
-  #modal .caption {
+  .content .status .dot.active span {
+    padding-top: 4vw;
+  }
+  
+  .content .caption {
     font-size: 3vw;
     margin-bottom: .6vw;
   }
@@ -966,20 +988,20 @@ button:hover {
     margin-right: 1.5vw;
   }
   
-  #search {
+  #findMember {
     top: 5vw;
     left: 5vw;
     box-shadow: 0 0 8vw rgba(0,0,0,.1);
   }
   
-  #search:before {
+  .searchField:before {
     right: 4vw;
     top: 3.5vw;
     width: 6vw;
     height: 6vw;
   }
   
-  #search input {
+  .searchField input {
     width: 90vw;
     border-radius: 1.6vw;
     font-size: 4vw;
@@ -987,11 +1009,11 @@ button:hover {
     box-sizing: border-box;
   }
   
-  #search .results {
+  .searchField .results {
     max-height: 80vh;
   }
   
-  #search .answer {
+  .searchField .answer {
     font-size: 3.2vw;
     padding: 2.8vw 4vw;
   }

@@ -16,12 +16,16 @@ const modalTypes = {
   }
 };
 
-var activeModalContent;
+var activeModal = {
+  type: null,
+  node: null
+};
 
 //відкрити спливаюче вікно з даними що є в об'єкті memberData
 function openModal(type, memberId) {
-  activeModalContent = document.getElementById(type);
-  activeModalContent.classList.add('active');
+  activeModal.type = type;
+  activeModal.node = document.getElementById(type);
+  activeModal.node.classList.add('active');
   
   if(memberId) {
     ajaxQuery('backend/getMemberById.php', 'id='+memberId, function(response) {
@@ -37,8 +41,11 @@ function openModal(type, memberId) {
 
 function closeModal() {
   modal.className = '';
-  activeModalContent.className = 'content';
-  activeModalContent = null;
+  activeModal.node.className = 'content';
+  
+  if(modalTypes[activeModal.type].closer) modalTypes[activeModal.type].closer();
+  activeModal.node = null;
+  activeModal.type = null;
 };
 
 modal.querySelector('.blackBG').addEventListener('click', closeModal); //закрити спливаюче вікно при кліку на темний фон

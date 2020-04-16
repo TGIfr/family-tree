@@ -89,17 +89,6 @@ class FamilyTree {
     if(!this.HR_mode) return;
     
     const memberBlock = this.getMemberBlockById(newMemberData.id);
-  
-    if(newMemberData.image) {
-      var pictureBlock = memberBlock.querySelector('.picture');
-      var imgBlock = pictureBlock.querySelector('img');
-      if(!imgBlock) {
-        var imgBlock = document.createElement('img');
-        pictureBlock.append(imgBlock)
-      };
-      
-      imgBlock.src = 'img/members/'+newMemberData.image;
-    };
     
     if(newMemberData.name)
       memberBlock.querySelector('.name').textContent = newMemberData.name;
@@ -244,6 +233,15 @@ class FamilyTree {
     button.onclick = (function(e) {
       e.stopPropagation();
       this.toggleChildrenBlock(parent);
+      
+      if(button.textContent == '-')
+        setTimeout((function(){
+          this.mountBlock.scrollBar.scrollIntoView(button, {
+            offsetLeft: window.innerWidth/2,
+            offsetTop: window.innerHeight/2
+          });
+        }).bind(this), this.animationDelay);
+      
     }).bind(this);
 
     //скасовує перетягування полотна якщо клік відбувається на кнопці розгортання

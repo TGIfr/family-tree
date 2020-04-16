@@ -15,6 +15,10 @@ modalTypes.editMember = {
     saveButton: document.querySelector('#editMember .save')
   },
   opener: displayMemberEditModal,
+  closer: function() {
+    modalTypes.editMember.newData = {};
+    modalTypes.editMember.elements.img.src = '';
+  },
   newData: {}
 };
 
@@ -41,7 +45,16 @@ modalTypes.editMember.elements.imgLoad.onchange = function(e) {
   ajaxQuery('backend/uploadPicture.php', formData, function(src) {
     modalTypes.editMember.node.classList.add('hasImage');
     modalTypes.editMember.elements.img.src = src;
-    modalTypes.editMember.newData.image = src.split('/')[3];
+    
+    const memberBlock = familyTree.getMemberBlockById(modalTypes.editMember.newData.id);
+    var pictureBlock = memberBlock.querySelector('.picture');
+    var imgBlock = pictureBlock.querySelector('img');
+    if(!imgBlock) {
+      var imgBlock = document.createElement('img');
+      pictureBlock.append(imgBlock)
+    };
+
+    imgBlock.src = src;
   }, true);
 };
 
@@ -86,9 +99,6 @@ modalTypes.editMember.elements.saveButton.onclick = function() {
   });
 };
 
-modal.querySelector('.blackBG').addEventListener('click', function() {
-  modalTypes.editMember.newData = modalTypes.changeParent.newData = {};
-});
 
 function displayMemberEditModal(memberData) {
   modalTypes.editMember.newData.id = memberData.id;
@@ -177,15 +187,18 @@ modalTypes.changeParent = {
     const parent = familyTree.getParentBlockById(memberData.id);
     modalTypes.changeParent.elements.currentParent.textContent = parent ? parent.querySelector('.name').textContent : '-';
     modalTypes.changeParent.newData.childId = memberData.id;
-  }
+  },
+  closer: function() {
+    modalTypes.changeParent.newData = {};
+  },
 };
 
 modalTypes.changeParent.elements.saveButton.onclick = function() {
   const props = 'id='+modalTypes.changeParent.newData.childId+'&parent_id='+modalTypes.changeParent.newData.newParentId;
   ajaxQuery('backend/changeParent.php', props, function() {
     familyTree.changeParent(modalTypes.changeParent.newData.childId, modalTypes.changeParent.newData.newParentId);
-    closeModal();
     familyTree.showMember(modalTypes.changeParent.newData.childId);
+    closeModal();
   });
 };
 

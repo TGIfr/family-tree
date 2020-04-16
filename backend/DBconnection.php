@@ -1,9 +1,9 @@
 <?php
 
 $host = "localhost";
-$login = "bestkyiv";
-$pass = "CIpdaqpdTZ";
-$dbname = "familytree";
+$login = "root";
+$pass = "";
+$dbname = "bestkyivfamilytree";
 
 $connection = new mysqli($host, $login, $pass, $dbname);
 $connection->set_charset("utf8");
