@@ -18,6 +18,7 @@ modalTypes.editMember = {
   closer: function() {
     modalTypes.editMember.newData = {};
     modalTypes.editMember.elements.img.src = '';
+    modalTypes.editMember.elements.imgLoad.value = '';
   },
   newData: {}
 };
@@ -34,8 +35,13 @@ modalTypes.editMember.elements.imgLoad.onchange = function(e) {
     alert('Error: Exceeded size 2MB');
     return;
   };
-        
-  const name = modalTypes.editMember.elements.img.getAttribute('src') ? modalTypes.editMember.elements.img.getAttribute('src').split('/')[2].split('.')[0] : 'member'+modalTypes.editMember.newData.id;
+  
+  var name = 'member'+modalTypes.editMember.newData.id;
+  const src = modalTypes.editMember.elements.img.getAttribute('src');
+  if(src) {
+    const urlParts = src.split('/');
+    name = urlParts[urlParts.length - 1].split('.')[0];
+  };
   
   var formData = new FormData();
   formData.append('newImage', newImage, this.value);
