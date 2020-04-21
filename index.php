@@ -8,7 +8,8 @@
   <title>Сімейне Дерево</title>
   <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.ico">
   <link rel="stylesheet" href="css/reset.css">
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/index.css">
+  <link rel="stylesheet" href="css/modals.css">
 </head>
 <body>
   <section id="modal">
@@ -31,10 +32,8 @@
         </div>
         <div class="family">
           <div class="logo"></div>
-          <div>
-            <div class="caption">Family</div>
-            <div class="value"></div>
-          </div>
+          <div class="caption">Family</div>
+          <div class="value"></div>
         </div>
       </div>
     </div>
@@ -68,20 +67,17 @@
           </div>
         </div>
         <div class="family">
-          <div class="logo"></div>
-          <div>
-            <div class="caption">Family</div>
-            <div class="value">
-              <select>
-                <option value="null">Нема</option>
-              </select>
-            </div>
+          <div class="caption">Family</div>
+          <div class="value">
+            <select>
+              <option value="null">Нема</option>
+            </select>
           </div>
         </div>
       </div>
-      <div class="options">
+      <div class="butonsContainer">
         <button class="save">Зберегти</button>
-        <button onclick="closeModal()">Відмінити</button>
+        <button onclick="modal.close()">Відмінити</button>
       </div>
     </div>
     <div class="content" id="removeConfirmation">
@@ -90,20 +86,21 @@
         <button class="red ifHasChildren">Лише цього мембера</button>
         <button class="red ifHasChildren">Цього мембера і всіх нащадків</button>
         <button class="red ifHasNoChildren">Так</button>
-        <button onclick="closeModal()">Ні</button>
+        <button onclick="modal.close()">Ні</button>
       </div>
     </div>
     <div class="content" id="changeParent">
-      <div class="currentParent">Ментор: <span class="value">-</span></div>
+      <div class="currentParent">Ментор мембера <span class="child"></span>:<div class="value">-</div></div>
       <div class="searchField">
         <input type="text" placeholder="Type name...">
         <div class="results">
           <div class="list"></div>
         </div>
       </div>
-      <div class="options">
+      <div class="butonsContainer">
         <button class="save">Зберегти</button>
-        <button onclick="closeModal()">Відмінити</button>
+        <button onclick="modal.close()">Відмінити</button>
+        <button class="removeMentor red">Не має ментора</button>
       </div>
     </div>
     <?php endif; ?>
@@ -120,8 +117,8 @@
   <section id="wrapper"></section>
   
   <script src="js/smooth-scrollbar.js"></script>
-  <script src="js/script.js"></script>
-  <script src="js/familyTreeGenerator.js"></script>
+  <script src="js/index.js"></script>
+  <script src="js/familyTree.js"></script>
   <script>
     familyTree = new FamilyTree(document.getElementById('wrapper')<?php if($HR_mode) echo ', true'; ?>);
   </script>

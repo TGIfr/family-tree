@@ -5,7 +5,12 @@ $connection = (include 'DBconnection.php');
 if(!isset($_POST['id'])) echo 'error';
 else $needed_id = $_POST['id'];
 
-$res = $connection->query("SELECT member.*, family.id as family_id, family.name as family_name, family.logo as family_logo FROM member LEFT JOIN family ON member.family_id = family.id WHERE member.id = $needed_id");
+$res = $connection->query("
+  SELECT member.*, family.id as family_id, family.name as family_name, family.logo as family_logo, mentor.name as mentor_name
+  FROM member
+  LEFT JOIN family ON member.family_id = family.id
+  LEFT JOIN member as mentor ON member.mentor_id = mentor.id
+  WHERE member.id = $needed_id");
 
 $member;
 
@@ -14,6 +19,7 @@ if($res->num_rows > 0) {
     $member = array(
       "id" => $memberData['id'],
       "mentor_id" => $memberData["mentor_id"],
+      "mentor_name" => $memberData["mentor_name"],
       "name" => $memberData['name'],
       "image" => $memberData["image"],
       "status" => $memberData["status"],
@@ -27,7 +33,7 @@ if($res->num_rows > 0) {
   }
 }
 
-$children = $connection->query("SELECT * FROM member WHERE mentor_id = $id");
+$children = $connection->query("SELECT * FROM member WHERE mentor_id = $needed_id");
 if($children->num_rows > 0) $member["children"] = true;
 
 echo json_encode($member);

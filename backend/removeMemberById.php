@@ -14,5 +14,7 @@ if(!isset($_POST[cascade])) {
 
 $connection->query("DELETE FROM member WHERE id = $id");
 
+//remove image
+
 $connection->close();
 ?>

@@ -1,0 +1,479 @@
+@font-face {
+  font-family: 'Tahoma';
+  src: url(../fonts/tahoma.ttf);
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Tahoma';
+  src: url(../fonts/tahomabd.ttf);
+  font-weight: bold;
+  font-style: normal;
+}
+
+body, html {
+  overflow: hidden;
+  height: 100%;
+}
+
+.scrollbar-thumb {
+  background: #0071B9;
+  width: 4px;
+  height: 4px;
+  border-radius: 2px;
+}
+
+.scrollbar-track {
+  width: 4px;
+  height: 4px;
+  background: transparent;
+}
+
+.mountBlock {
+  height: 100%;
+  width: 100vw;
+  cursor: grab;
+}
+
+.mountBlock.grabbing {
+  user-select: none;
+  cursor: grabbing;
+}
+
+.mountBlock .scroll-content {
+  text-align: center;
+  height: 100%;
+}
+
+#familyTree {
+  font-family: 'Tahoma';
+  display: inline-flex;
+  padding: 30vh 4vw 4vw;
+  box-sizing: border-box;
+}
+
+#familyTree .member {
+  position: relative;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#familyTree .member:before {
+  content: '';
+  position: absolute;
+  height: 1px;
+  background: #999;
+  top: -1vw;
+}
+
+#familyTree .member:first-child:before {
+  left: 50%;
+  width: 50%;
+}
+
+#familyTree .member:before {
+  left: 0;
+  width: 100%;
+}
+
+#familyTree .member:last-child:before {
+  left: 0;
+  width: 50%;
+}
+
+#familyTree .member:only-child:before {
+  display: none;
+}
+
+#familyTree .member:after {
+  content: '';
+  position: absolute;
+  width: 1px;
+  height: 1vw;
+  background: #999;
+  left: 50%;
+  bottom: 100%;
+  transition: all .3s ease;
+}
+
+#familyTree > .member {
+  border-right: 1px solid #eee;
+  padding: 1vw 2vw 0;
+}
+
+#familyTree > .member:last-child {
+  border: none;
+}
+
+#familyTree > .member:before,
+#familyTree > .member:after {
+  display: none;
+}
+
+#familyTree .member .description {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 0 2vw .8vw;
+  transition: all .3s ease;
+}
+
+#familyTree .member .picture {
+  width: 6vw;
+  height: 7.5vw;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-bottom: 1vw;
+  position: relative;
+  transition: all .3s ease;
+  background: url('../img/default.jpg') no-repeat center;
+  background-size: cover;
+}
+
+#familyTree .member .picture img {
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  user-drag: none;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+#familyTree .member.active > .description:before {
+  content: '';
+  position: absolute;
+  z-index: 2;
+  top: 53%;
+  left: 50%;
+  margin-left: -2.9vw;
+  width: .7vw;
+  height: .7vw;
+  border: .2vw solid #fff;
+  border-radius: 50%;
+  background: #75BF1E;
+  transition: all .3s ease;
+}
+
+#familyTree .member .name {
+  font-size: .8vw;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: .5vw;
+  white-space: nowrap;
+  transition: all .3s ease;
+}
+
+#familyTree .member .status {
+  font-size: .7vw;
+  font-weight: bold;
+  color: #777;
+  transition: all .3s ease;
+}
+
+#familyTree .member.highlighted > .description .name,
+#familyTree .member.highlighted > .description .status {
+  color: #0071b9;
+}
+
+#familyTree .settings {
+  position: absolute;
+  top: 37%;
+  transform: translateY(-50%);
+  left: 40%;
+  padding-left: 3.5vw;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-content: flex-start;
+  opacity: 0;
+  transition: all .2s;
+}
+
+#familyTree .description:hover .settings {
+  opacity: 1;
+  left: 50%;
+}
+
+#familyTree .settings > div {
+  width: 2vw;
+  height: 2vw;
+  margin: .3vw 0;
+  flex-shrink: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 60%;
+  background-color: #53b6f4;
+}
+
+#familyTree .settings .removeMember {
+  background-color: #ff3232;
+  background-image: url(../img/remove.svg);
+}
+
+#familyTree .settings .changeParent {
+  background-image: url(../img/change.svg);
+}
+
+#familyTree .settings .addChild {
+  background-image: url(../img/add.svg);
+}
+
+#familyTree .settings .addChild.hidden {
+  display: none;
+}
+
+#familyTree .opener {
+  cursor: pointer;
+  height: 1.2vw;
+  width: 1.2vw;
+  border-radius: 50%;
+  background: #0071B9;
+  color: #fff;
+  font-size: .8vw;
+  font-weight: bold;
+  text-align: center;
+  line-height: 1.2vw;
+  margin-bottom: 1vw;
+  overflow: hidden;
+  transition: all .3s ease;
+}
+
+#familyTree .children {
+  padding-top: 1.5vw;
+  display: flex;
+  align-items: flex-start;
+  position: relative;
+  transition: all .3s ease;
+}
+
+#familyTree .children:before {
+  content: '';
+  position: absolute;
+  top: -.5vw;
+  left: 50%;
+  width: 1px;
+  background: #999;
+  height: 1vw;
+  transition: all .3s ease;
+}
+
+#familyTree .children:not(.visible) {
+  padding: 0;
+  opacity: 0;
+}
+
+#familyTree .children:not(.visible):before,
+#familyTree .children:not(.visible) .children:before {
+  height: 0;
+  opacity: 0;
+}
+
+#familyTree .children:not(.visible) .member:after {
+  height: 0;
+  opacity: 0;
+}
+
+#familyTree .children:not(.visible) .member .picture {
+  height: 0;
+  width: 0;
+  margin: 0;
+  opacity: 0;
+}
+
+#familyTree .children:not(.visible) .member .description {
+  margin: 0;
+  opacity: 0;
+}
+
+#familyTree .children:not(.visible) .member .description:before {
+  margin: 0;
+  width: 0;
+  height: 0;
+  border: 0;
+  opacity: 0;
+}
+
+#familyTree .children:not(.visible) .member .name,
+#familyTree .children:not(.visible) .member .status {
+  font-size: 0;
+  margin: 0;
+  opacity: 0;
+}
+
+#familyTree .children:not(.visible) .member .opener {
+  height: 0;
+  width: 0;
+  opacity: 0;
+  font-size: 0;
+  margin: 0;
+}
+
+#familyTree .children:not(.visible) .member .settings > div {
+  height: 0;
+  width: 0;
+  margin: 0;
+}
+
+
+.searchField {
+  position: relative;
+  width: 20vw;
+}
+
+.searchField:before {
+  content: '';
+  position: absolute;
+  z-index: 3;
+  right: 1vw;
+  top: .8vw;
+  display: block;
+  width: 1.5vw;
+  height: 1.5vw;
+  background: url(../img/search.svg) no-repeat;
+  background-size: contain;
+}
+
+.searchField input {
+  position: relative;
+  z-index: 2;
+  padding: 1vw;
+  border-radius: .4vw;
+  border: 1px solid #aaa;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.searchField .results {
+  position: absolute;
+  z-index: 1;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 50vh;
+  overflow: hidden;
+  box-shadow: 0 0 2vw rgba(0,0,0,.1);
+}
+
+.searchField .answer {
+  cursor: pointer;
+  width: 100%;
+  font: .8vw 'Tahoma';
+  padding: .7vw 1vw;
+  box-sizing: border-box;
+  color: #333;
+  background: #fff;
+  transition: background .2s ease;
+}
+
+.searchField .answer:hover {
+  background: #fafafa;
+}
+
+.searchField#findMember {
+  position: absolute;
+  top: 3vw;
+  left: 3vw;
+  z-index: 5;
+  box-shadow: 0 0 2vw rgba(0,0,0,.1);
+}
+
+@media screen and (max-width: 800px) {
+  #familyTree {
+    padding: 30vh 10vw 10vw;
+  }
+  
+  #familyTree > .member {
+    padding: 8vw 8vw 2vw;
+  }
+  
+  #familyTree .member:before {
+    top: -8vw;
+  }
+  
+  #familyTree .member:after {
+    height: 8vw;
+  }
+  
+  #familyTree .member .description {
+    margin: 0 8vw 12vw;
+  }
+  
+  #familyTree .member .picture {
+    width: 32vw;
+    height: 40vw;
+    margin-bottom: 4vw;
+  }
+  
+  #familyTree .member.active > .description:before {
+    width: 3.2vw;
+    height: 3.2vw;
+    border-width: 1.2vw;
+    top: 57%;
+    margin-left: -14.8vw;
+  }
+  
+  #familyTree .member .name {
+    font-size: 4vw;
+    margin-bottom: 2vw;
+  }
+  
+  #familyTree .member .status {
+    font-size: 3.2vw;
+  }
+  
+  #familyTree .opener {
+    height: 4.8vw;
+    width: 4.8vw;
+    transform: translateY(-8vw);
+    font-size: 3.2vw;
+    line-height: 4.8vw;
+  }
+  
+  #familyTree .children {
+    padding-top: 8vw;
+  }
+  
+  #familyTree .children:before {
+    top: -6vw;
+    height: 6vw;
+  }
+  
+  .searchField:before {
+    right: 4vw;
+    top: 3.5vw;
+    width: 6vw;
+    height: 6vw;
+  }
+  
+  .searchField input {
+    border-radius: 1.6vw;
+    font-size: 4vw;
+    padding: 4vw;
+    box-sizing: border-box;
+  }
+  
+  .searchField .results {
+    max-height: 80vh;
+  }
+  
+  .searchField .answer {
+    font-size: 3.2vw;
+    padding: 2.8vw 4vw;
+  }
+  
+  .searchField#findMember {
+    top: 5vw;
+    left: 5vw;
+    width: 90vw;
+    box-shadow: 0 0 8vw rgba(0,0,0,.1);
+  }
+}

@@ -49,17 +49,20 @@ class FamilyTree {
     const memberBlock = this.getMemberBlockById(id);
 
     let parentBlock = this.getParentBlockById(id); //батьківський блок мембера
-    let childrenBlock = parentBlock.querySelector('.children'); //блок дітей в якому знаходить шуканий мембер
+    
+    if(parentBlock) {
+      let childrenBlock = parentBlock.querySelector('.children'); //блок дітей в якому знаходить шуканий мембер
 
-    //поки існує батьківський блок
-    while(parentBlock) {
-      //якщо блок дітей скритий то відкрити його
-      if(!childrenBlock.classList.contains('visible'))
-        this.toggleChildrenBlock(parentBlock);
+      //поки існує батьківський блок
+      while(parentBlock) {
+        //якщо блок дітей скритий то відкрити його
+        if(!childrenBlock.classList.contains('visible'))
+          this.toggleChildrenBlock(parentBlock);
 
-      //перехід на попереднє покоління
-      childrenBlock = parentBlock.parentNode;
-      parentBlock = childrenBlock.closest('.member');
+        //перехід на попереднє покоління
+        childrenBlock = parentBlock.parentNode;
+        parentBlock = childrenBlock.closest('.member');
+      };
     };
 
     const memberBlockDescription = memberBlock.querySelector('.description');
@@ -77,6 +80,7 @@ class FamilyTree {
   
   //отримати DOM елемент мембера з id
   getMemberBlockById(id) {
+    if(!id) return null;
     return document.getElementById('member'+id);
   }
   
@@ -90,6 +94,16 @@ class FamilyTree {
     
     const memberBlock = this.getMemberBlockById(newMemberData.id);
     
+    if(newMemberData.img) {
+      var pictureBlock = memberBlock.querySelector('.picture');
+      var imgBlock = pictureBlock.querySelector('img');
+      if(!imgBlock) {
+        var imgBlock = document.createElement('img');
+        pictureBlock.append(imgBlock)
+      };
+      imgBlock.src = newMemberData.img;
+    };
+    
     if(newMemberData.name)
       memberBlock.querySelector('.name').textContent = newMemberData.name;
     
@@ -98,18 +112,13 @@ class FamilyTree {
     else if(newMemberData.active === false)
       memberBlock.classList.remove('active');
     
-    if(newMemberData.status)
+    if(newMemberData.status !== undefined) {
       memberBlock.querySelector('.status').textContent = statuses[newMemberData.status];
-    
-    const settings = memberBlock.querySelector('.settings');
-    const addChild = settings.querySelector('.addChild');
-    if(newMemberData.status > 1 && !addChild) {
-      const addChild = document.createElement('div');
-      addChild.classList.add('addChild');
-      settings.append(addChild);
-    }
-    else if(newMemberData.status < 2 && addChild)
-      addChild.remove();
+      
+      const addChild = memberBlock.querySelector('.settings .addChild');
+      if(newMemberData.status < 2) addChild.classList.add('hidden');
+      else addChild.classList.remove('hidden');
+    };
   }
   
   //видалити мембера з id
@@ -140,7 +149,7 @@ class FamilyTree {
         memberHabitation.remove();
       };
       
-      closeModal();
+      modal.close();
     }).bind(this));
   }
   
@@ -152,14 +161,14 @@ class FamilyTree {
     const memberHabitation = parentBlock ? parentBlock.querySelector('.children') : memberBlock.parentNode;
 
     const newParentBlock = this.getMemberBlockById(newParentId);
-    var newParentChildrenBlock = newParentBlock.querySelector('.children');
+    var newMemberHabitation = newParentBlock ? newParentBlock.querySelector('.children') : document.getElementById('familyTree');
 
-    if(!newParentChildrenBlock) {
-      newParentChildrenBlock = this.createChildrenBlock(newParentBlock);
-      newParentBlock.append(newParentChildrenBlock);
+    if(!newMemberHabitation) {
+      newMemberHabitation = this.createChildrenBlock(newParentBlock);
+      newParentBlock.append(newMemberHabitation);
     };
 
-    newParentChildrenBlock.appendChild(memberBlock);
+    newMemberHabitation.appendChild(memberBlock);
 
     if(parentBlock && !memberHabitation.childNodes.length) {
       parentBlock.querySelector('.opener').remove();
@@ -167,15 +176,15 @@ class FamilyTree {
     };
   }
   
-  addNewChild(parent) {
-    ajaxQuery('backend/createMember.php', 'parent_id='+parent.id+'&family='+parent.family_id, (function(response) {
+  addNewChild(parentId) {
+    ajaxQuery('backend/createMember.php', 'parent_id='+parentId, (function(id) {
       const child = this.createMemberBlock({
-        id: response,
+        id: id,
         active: true,
         name: 'Новий мембер',
         status: 0
       });
-      const parentBlock = this.getMemberBlockById(parent.id);
+      const parentBlock = this.getMemberBlockById(parentId);
       
       var childrenBlock = parentBlock.querySelector('.children');
       if(!childrenBlock) {
@@ -184,9 +193,9 @@ class FamilyTree {
       };
       
       childrenBlock.append(child);
-      this.showMember(response);
+      this.showMember(id);
       
-      openModal('editMember', response);
+      modal.open('editMember', {memberId: id});
     }).bind(this));
   }
   
@@ -234,14 +243,12 @@ class FamilyTree {
       e.stopPropagation();
       this.toggleChildrenBlock(parent);
       
-      if(button.textContent == '-')
-        setTimeout((function(){
-          this.mountBlock.scrollBar.scrollIntoView(button, {
-            offsetLeft: window.innerWidth/2,
-            offsetTop: window.innerHeight/2
-          });
-        }).bind(this), this.animationDelay);
-      
+      setTimeout((function(){
+        this.mountBlock.scrollBar.scrollIntoView(button, {
+          offsetLeft: window.innerWidth/2,
+          offsetTop: window.innerHeight/2
+        });
+      }).bind(this), this.animationDelay);
     }).bind(this);
 
     //скасовує перетягування полотна якщо клік відбувається на кнопці розгортання
@@ -301,7 +308,7 @@ class FamilyTree {
     //відкрити спливаюче вікно з інформацією при кліку на опис мембера
     description.onclick = (function(e) {
       e.stopPropagation();
-      openModal(this.HR_mode ? 'editMember' : 'memberInfo', memberData.id);
+      modal.open(this.HR_mode ? 'editMember' : 'memberInfo', {memberId: memberData.id});
     }).bind(this);
     
     //режим редагування дерева
@@ -313,31 +320,33 @@ class FamilyTree {
       //кнопка що відкриває модальне вікно для зміни ментора
       const changeParent = document.createElement('div');
       changeParent.classList.add('changeParent');
+      changeParent.setAttribute('title', 'Змінити ментора');
       changeParent.onclick = function(e) {
         e.stopPropagation();
-        openModal('changeParent', memberData.id);
+        modal.open('changeParent', {memberId: memberData.id});
       };
       settings.append(changeParent);
       
       //кнопка що відкриває модальне вікно для видалення мембера
       const removeMember = document.createElement('div');
       removeMember.classList.add('removeMember');
+      removeMember.setAttribute('title', 'Видалити мембера');
       removeMember.onclick = function(e) {
         e.stopPropagation();
-        openModal('removeConfirmation', memberData.id);
+        modal.open('removeConfirmation', {memberId: memberData.id});
       };
       settings.append(removeMember);
       
       //якщо мембер є фулом чи алюмні, то додати кнопку що створює дитину
-      if(memberData.status >= 2) {
-        const addChild = document.createElement('div');
-        addChild.classList.add('addChild');
-        addChild.onclick = (function(e) {
-          e.stopPropagation();
-          this.addNewChild(memberData);
-        }).bind(this);
-        settings.append(addChild);
-      };
+      const addChild = document.createElement('div');
+      addChild.classList.add('addChild');
+      addChild.setAttribute('title', 'Додати дитину');
+      addChild.onclick = (function(e) {
+        e.stopPropagation();
+        this.addNewChild(memberData.id);
+      }).bind(this);
+      if(memberData.status < 2) addChild.classList.add('hidden');
+      settings.append(addChild);
       
       description.append(settings);
     };

@@ -1,234 +1,359 @@
 'use strict';
 
-modalTypes.editMember = {
+modal.addType('editMember', {
   node: document.getElementById('editMember'),
   elements: {
-    img: document.querySelector('#editMember .picture img'),
-    imgLoad: document.querySelector('#editMember .picture .imageLoad'),
-    name: document.querySelector('#editMember .name'),
-    activityIndicator: document.getElementById('activityIndicatorInput'),
-    statusDots: document.querySelectorAll('#editMember .status .dot'),
-    recruitment: document.querySelector('#editMember .recruitment'),
-    recruimentSeason: document.querySelector('#editMember .recruitment .season'),
-    recruimentYear: document.querySelector('#editMember .recruitment .year'),
-    family: document.querySelector('#editMember .family select'),
-    saveButton: document.querySelector('#editMember .save')
+    img: {
+      node: document.querySelector('#editMember .picture img'),
+      set: function(fileName) {
+        modal.types.editMember.elements.img.node.src = 'img/members/' + fileName;
+        modal.types.editMember.node.classList.add('hasImage');
+      },
+      clear: function() {
+        modal.types.editMember.elements.img.node.src = '';
+        modal.types.editMember.node.classList.remove('hasImage');
+      }
+    },
+    imgInput: {
+      node: document.querySelector('#editMember .picture .imageLoad'),
+      clear: function() {
+        modal.types.editMember.elements.imgInput.node.value = '';
+      },
+      init: function() {
+        modal.types.editMember.elements.imgInput.node.onchange = function(e) {
+          const newImage = this.files[0];
+          var mime_types = ['image/jpeg', 'image/jpg', 'image/png'];
+          if(mime_types.indexOf(newImage.type) == -1) {
+            alert('Error: Incorrect file type');
+            return;
+          };
+
+          if(newImage.size > 2*1024*1024) {
+            alert('Error: Exceeded size 2MB');
+            return;
+          };
+
+          var imgName = 'member'+modal.types.editMember.memberData.current.id;
+          const currentSrc = modal.types.editMember.elements.img.node.getAttribute('src');
+          if(currentSrc) {
+            const srcParts = currentSrc.split('/');
+            imgName = srcParts[srcParts.length - 1].split('.')[0];
+          };
+
+          var formData = new FormData();
+          formData.append('newImage', newImage, this.value);
+          formData.append('id', modal.types.editMember.memberData.current.id);
+          formData.append('name', imgName);
+
+          ajaxQuery('backend/uploadPicture.php', formData, function(src) {
+            modal.types.editMember.elements.img.set(src);
+            familyTree.changeMember({id: modal.types.editMember.memberData.current.id, img: src});
+          }, true);
+        };
+      }
+    },
+    name: {
+      node: document.querySelector('#editMember .name'),
+      set: function(value) {
+        modal.types.editMember.elements.name.node.value = value;
+      },
+      clear: function() {
+        modal.types.editMember.elements.name.node.value = '';
+      },
+      init: function() {
+        modal.types.editMember.elements.name.node.oninput = function() {
+          modal.types.editMember.memberData.setNew('name', modal.types.editMember.elements.name.node.value);
+        };
+      }
+    },
+    activityIndicator: {
+      node: document.getElementById('activityIndicatorInput'),
+      set: function(value) {
+        modal.types.editMember.elements.activityIndicator.node.checked = value;
+      },
+      clear: function() {
+        modal.types.editMember.elements.activityIndicator.node.checked = false;
+      },
+      init: function() {
+        modal.types.editMember.elements.activityIndicator.node.onclick = function() {
+          modal.types.editMember.memberData.setNew('active', modal.types.editMember.elements.activityIndicator.node.checked);
+        };
+      }
+    },
+    statusDots: {
+      nodes: document.querySelectorAll('#editMember .status .dot'),
+      set: function(status) {
+        [].forEach.call(modal.types.editMember.elements.statusDots.nodes, function(dot, i) {
+          if(i < status) dot.classList.add('filled');
+          if(i == status) dot.classList.add('active');
+        });
+      },
+      clear: function() {
+        [].forEach.call(modal.types.editMember.elements.statusDots.nodes, function(dot) {
+          dot.className = 'dot';
+        });
+      },
+      init: function() {
+        [].forEach.call(modal.types.editMember.elements.statusDots.nodes, function(dot, i) {
+          dot.onclick = function() {
+            for(var j = 0; j < 4; j++) {
+              modal.types.editMember.elements.statusDots.nodes[j].className = 'dot';
+              if(j < i) modal.types.editMember.elements.statusDots.nodes[j].classList.add('filled');
+            };
+            dot.classList.add('active');
+            
+            modal.types.editMember.memberData.setNew('status', i);
+          };
+        });
+      }
+    },
+    recruitment: {
+      node: document.querySelector('#editMember .recruitment'),
+      seasonNode: document.querySelector('#editMember .recruitment .season'),
+      yearNode: document.querySelector('#editMember .recruitment .year'),
+      set: function(season, year) {
+        if(season) {
+          modal.types.editMember.elements.recruitment.seasonNode.value = String(season);
+        };
+
+        if(year) {
+          modal.types.editMember.elements.recruitment.yearNode.value = String(year);
+        };
+      },
+      clear: function() {
+        modal.types.editMember.elements.recruitment.seasonNode.value = modal.types.editMember.elements.recruitment.yearNode.value = 'null';
+      },
+      init: function() {        
+        for(var i = 2007; i <= new Date().getFullYear(); i++) {
+          const option = document.createElement('option');
+          option.value = i;
+          option.textContent = i;
+          if(i == new Date().getFullYear()) option.selected = true;
+          modal.types.editMember.elements.recruitment.yearNode.append(option);
+        };
+           
+        modal.types.editMember.elements.recruitment.seasonNode.onchange = function() {
+          modal.types.editMember.memberData.setNew('rec_season', modal.types.editMember.elements.recruitment.seasonNode.value);
+        };
+        
+        modal.types.editMember.elements.recruitment.yearNode.onchange = function() {
+          modal.types.editMember.memberData.setNew('rec_year', modal.types.editMember.elements.recruitment.yearNode.value);
+        };
+      }
+    },
+    family: {
+      node: document.querySelector('#editMember .family select'),
+      set: function(familyName) {
+        modal.types.editMember.elements.family.node.value = String(familyName);
+      },
+      clear: function() {
+        modal.types.editMember.elements.family.node.value = 'null';
+      },
+      init: function() {
+        ajaxQuery('backend/getAllFamilies.php', null, function(response) {
+          JSON.parse(response).forEach(function(family) {
+            const option = document.createElement('option');
+            option.value = family.id;
+            option.textContent = family.name;
+            modal.types.editMember.elements.family.node.append(option);
+          });
+        });
+        
+        modal.types.editMember.elements.family.node.onchange = function() {
+          modal.types.editMember.memberData.setNew('family_id', modal.types.editMember.elements.family.node.value);
+        };
+      }
+    },
+    saveButton: {
+      node: document.querySelector('#editMember .save'),
+      init: function() {
+        modal.types.editMember.elements.saveButton.node.onclick = function() {
+          var props = 'id=' + modal.types.editMember.memberData.current.id;
+          var propsCount = 0;
+          for(let prop in modal.types.editMember.memberData.new) {
+            props += (props ? '&' : '') + prop + '=' + modal.types.editMember.memberData.new[prop];
+            propsCount++;
+          };
+
+          if(propsCount > 0) {
+            ajaxQuery('backend/editMember.php', props, function(response) {
+              const newMemberData = modal.types.editMember.memberData.new;
+              newMemberData.id = modal.types.editMember.memberData.current.id;
+              familyTree.changeMember(newMemberData);
+              modal.close();
+            });
+          }
+          else
+            modal.close();
+        };
+      }
+    }
   },
-  opener: displayMemberEditModal,
-  closer: function() {
-    modalTypes.editMember.newData = {};
-    modalTypes.editMember.elements.img.src = '';
-    modalTypes.editMember.elements.imgLoad.value = '';
+  init: function() {
+    for(let element in modal.types.editMember.elements)
+      if(modal.types.editMember.elements[element].init)
+        modal.types.editMember.elements[element].init();
   },
-  newData: {}
-};
+  opener: function(settings) {
+    ajaxQuery('backend/getMemberById.php', 'id='+settings.memberId, function(response) {
+      const memberData = JSON.parse(response);
+      modal.types.editMember.memberData.current = memberData;
 
-modalTypes.editMember.elements.imgLoad.onchange = function(e) {
-  const newImage = this.files[0];
-  var mime_types = ['image/jpeg', 'image/jpg', 'image/png'];
-  if(mime_types.indexOf(newImage.type) == -1) {
-    alert('Error: Incorrect file type');
-    return;
-  };
-
-  if(newImage.size > 2*1024*1024) {
-    alert('Error: Exceeded size 2MB');
-    return;
-  };
-  
-  var name = 'member'+modalTypes.editMember.newData.id;
-  const src = modalTypes.editMember.elements.img.getAttribute('src');
-  if(src) {
-    const urlParts = src.split('/');
-    name = urlParts[urlParts.length - 1].split('.')[0];
-  };
-  
-  var formData = new FormData();
-  formData.append('newImage', newImage, this.value);
-  formData.append('id', modalTypes.editMember.newData.id);
-  formData.append('name', name);
-
-  ajaxQuery('backend/uploadPicture.php', formData, function(src) {
-    modalTypes.editMember.node.classList.add('hasImage');
-    modalTypes.editMember.elements.img.src = src;
-    
-    const memberBlock = familyTree.getMemberBlockById(modalTypes.editMember.newData.id);
-    var pictureBlock = memberBlock.querySelector('.picture');
-    var imgBlock = pictureBlock.querySelector('img');
-    if(!imgBlock) {
-      var imgBlock = document.createElement('img');
-      pictureBlock.append(imgBlock)
-    };
-
-    imgBlock.src = src;
-  }, true);
-};
-
-[].forEach.call(modalTypes.editMember.elements.statusDots, function(dot, i) {
-  dot.onclick = function() {
-    for(var j = 0; j < 4; j++) {
-      modalTypes.editMember.elements.statusDots[j].className = 'dot';
-      if(j < i) modalTypes.editMember.elements.statusDots[j].classList.add('filled');
-    };
-    dot.classList.add('active');
-  };
-});
-
-for(var i = 2007; i <= new Date().getFullYear(); i++) {
-  const option = document.createElement('option');
-  option.value = i;
-  option.textContent = i;
-  if(i == new Date().getFullYear()) option.selected = true;
-  modalTypes.editMember.elements.recruimentYear.append(option);
-};
-
-ajaxQuery('backend/getAllFamilies.php', null, function(response) {
-  JSON.parse(response).forEach(function(family) {
-    const option = document.createElement('option');
-    option.value = family.id;
-    option.textContent = family.name;
-    modalTypes.editMember.elements.family.append(option);
-  });
-});
-
-modalTypes.editMember.elements.saveButton.onclick = function() {
-  var props = 'id='+modalTypes.editMember.newData.id;
-  for(let prop in modalTypes.editMember.newData) {
-    if(prop == 'id') continue;
-    props += '&' + prop + '=' + modalTypes.editMember.newData[prop];
-  };
-  
-  ajaxQuery('backend/editMember.php', props, function(response) {
-    familyTree.changeMember(modalTypes.editMember.newData);
-    modalTypes.editMember.newData = {};
-    closeModal();
-  });
-};
-
-
-function displayMemberEditModal(memberData) {
-  modalTypes.editMember.newData.id = memberData.id;
-  
-  //встановлення зображення
-  if(memberData.image) {
-    modalTypes.editMember.elements.img.src = 'img/members/' + memberData.image;
-    modalTypes.editMember.node.classList.add('hasImage');
-  };
-  
-  //встановлення імені
-  modalTypes.editMember.elements.name.value = memberData.name;
-  modalTypes.editMember.elements.name.oninput = function() {
-    if(modalTypes.editMember.elements.name.value == memberData.name)
-      delete modalTypes.editMember.newData.name;
-    else 
-      modalTypes.editMember.newData.name = modalTypes.editMember.elements.name.value;
-  };
-  
-  //встановлення активності мембера
-  modalTypes.editMember.elements.activityIndicator.checked = memberData.active;
-  modalTypes.editMember.elements.activityIndicator.onclick = function() {
-    if(modalTypes.editMember.elements.activityIndicator.checked == memberData.active)
-      delete modalTypes.editMember.newData.active;
-    else 
-      modalTypes.editMember.newData.active = modalTypes.editMember.elements.activityIndicator.checked;
-  };
-  
-    //встановлення статусу бестіка
-  [].forEach.call(modalTypes.editMember.elements.statusDots, function(dot, i) {
-    dot.className = 'dot';
-    if(i < memberData.status) dot.classList.add('filled');
-    if(i == memberData.status) dot.classList.add('active');
-    dot.addEventListener('click', function() {
-      if(i == memberData.status)
-        delete modalTypes.editMember.newData.status;
-      else
-        modalTypes.editMember.newData.status = i;
+      if(memberData.image) modal.types.editMember.elements.img.set(memberData.image);
+      modal.types.editMember.elements.name.set(memberData.name);
+      modal.types.editMember.elements.activityIndicator.set(memberData.active);
+      modal.types.editMember.elements.statusDots.set(memberData.status);
+      if(memberData.rec_season || memberData.rec_year) modal.types.editMember.elements.recruitment.set(memberData.rec_season, memberData.rec_year);
+      if(memberData.family_id) modal.types.editMember.elements.family.set(memberData.family_id);
     });
-  });
-  
-  //встановлення сезону і року рекрутменту
-  modalTypes.editMember.elements.recruitment.className = 'recruitment';
-  if(memberData.rec_season) {
-    modalTypes.editMember.elements.recruimentSeason.value = String(memberData.rec_season);
-    modalTypes.editMember.elements.recruimentSeason.onchange = function() {
-      if(modalTypes.editMember.elements.recruimentSeason.value == String(memberData.rec_season))
-        delete modalTypes.editMember.newData.rec_season;
+  },
+  closer: function() {
+    for(let element in modal.types.editMember.elements)
+      if(modal.types.editMember.elements[element].clear)
+        modal.types.editMember.elements[element].clear();
+    
+    modal.types.editMember.memberData.current = modal.types.editMember.memberData.new = {};
+  },
+  memberData: {
+    current: {},
+    new: {},
+    setNew: function(key, value) {
+      if(value === modal.types.editMember.memberData.current[key])
+        delete modal.types.editMember.memberData.new[key];
       else
-        modalTypes.editMember.newData.rec_season = modalTypes.editMember.elements.recruimentSeason.value;
-    };
-  };
-  
-  if(memberData.rec_year) {
-    modalTypes.editMember.elements.recruimentYear.value = String(memberData.rec_year);
-    modalTypes.editMember.elements.recruimentYear.onchange = function() {
-      if(modalTypes.editMember.elements.recruimentYear.value == String(memberData.rec_year))
-        delete modalTypes.editMember.newData.rec_year;
-      else
-        modalTypes.editMember.newData.rec_year = modalTypes.editMember.elements.recruimentYear.value;
-    };
-  };
-
-  //встановлення назви та логотипу сім'ї
-  modalTypes.editMember.elements.family.className = 'family';
-  modalTypes.editMember.elements.family.value = String(memberData.family_id);
-  modalTypes.editMember.elements.family.onchange = function() {
-    if(modalTypes.editMember.elements.family.value == String(memberData.family_id))
-      delete modalTypes.editMember.newData.family_id;
-    else
-      modalTypes.editMember.newData.family_id = modalTypes.editMember.elements.family.value;
-  };
-};
+        modal.types.editMember.memberData.new[key] = value;
+    }
+  }
+});
 
 
-
-modalTypes.changeParent = {
+modal.addType('changeParent', {
   node: document.getElementById('changeParent'),
   elements: {
-    currentParent: document.querySelector('#changeParent .currentParent .value'),
-    searchField: document.querySelector('#changeParent .searchField'),
-    saveButton: document.querySelector('#changeParent .save')
+    child: {
+      node: document.querySelector('#changeParent .currentParent .child'),
+      set: function(value) {
+        modal.types.changeParent.elements.child.node.textContent = value;
+      },
+      clear: function() {
+        modal.types.changeParent.elements.child.node.textContent = '';
+      }
+    },
+    currentParent: {
+      node: document.querySelector('#changeParent .currentParent .value'),
+      set: function(value) {
+        modal.types.changeParent.elements.currentParent.node.textContent = value || '-';
+      },
+      clear: function() {
+        modal.types.changeParent.elements.currentParent.node.textContent = '';
+      }
+    },
+    searchField: {
+      node: document.querySelector('#changeParent .searchField'),
+      init: function() {
+        familyTree.configureSearchField(modal.types.changeParent.elements.searchField.node, 'backend/findMentorsByName.php', function(mentor) {
+          if(modal.types.changeParent.memberData.newParent != mentor.id) {
+            if(modal.types.changeParent.memberData.currentParent == mentor.id)
+              modal.types.changeParent.memberData.newParent = null;
+            else
+              modal.types.changeParent.memberData.newParent = mentor.id;
+            
+            modal.types.changeParent.elements.currentParent.set(mentor.name);
+          };
+        });
+      }
+    },
+    saveButton: {
+      node: document.querySelector('#changeParent .save'),
+      init: function() {
+        modal.types.changeParent.elements.saveButton.node.onclick = function() {
+          if(modal.types.changeParent.memberData.newParent) {
+            const props = 'id='+modal.types.changeParent.memberData.id+'&parent_id='+modal.types.changeParent.memberData.newParent;
+            ajaxQuery('backend/changeParent.php', props, function() {
+              familyTree.changeParent(modal.types.changeParent.memberData.id, modal.types.changeParent.memberData.newParent);
+              familyTree.showMember(modal.types.changeParent.memberData.id);
+              modal.close();
+            });
+          }
+          else
+            modal.close();
+        };
+      }
+    },
+    removeMentor: {
+      node: document.querySelector('#changeParent .removeMentor'),
+      init: function() {
+        modal.types.changeParent.elements.removeMentor.node.onclick = function() {
+          if(modal.types.changeParent.memberData.currentParent) {
+            const props = 'id='+modal.types.changeParent.memberData.id+'&parent_id=null';
+            ajaxQuery('backend/changeParent.php', props, function() {
+              familyTree.changeParent(modal.types.changeParent.memberData.id, null);
+              familyTree.showMember(modal.types.changeParent.memberData.id);
+              modal.close();
+            });
+          }
+          else
+            modal.close();
+        }
+      }
+    }
   },
-  newData: {},
-  opener: function(memberData) {
-    const parent = familyTree.getParentBlockById(memberData.id);
-    modalTypes.changeParent.elements.currentParent.textContent = parent ? parent.querySelector('.name').textContent : '-';
-    modalTypes.changeParent.newData.childId = memberData.id;
+  memberData: {
+    id: null,
+    currentParent: null,
+    newParent: null
+  },
+  init: function() {
+    modal.types.changeParent.elements.searchField.init();
+    modal.types.changeParent.elements.saveButton.init();
+    modal.types.changeParent.elements.removeMentor.init();
+  },
+  opener: function(settings) {
+    ajaxQuery('backend/getMemberById.php', 'id='+settings.memberId, function(response) {
+      const memberData = JSON.parse(response);
+      modal.types.changeParent.memberData.id = memberData.id;
+      modal.types.changeParent.memberData.currentParent = memberData.mentor_id;
+      modal.types.changeParent.elements.child.set(memberData.name);
+      modal.types.changeParent.elements.currentParent.set(memberData.mentor_name);
+    });
   },
   closer: function() {
-    modalTypes.changeParent.newData = {};
+    modal.types.changeParent.elements.child.clear();
+    modal.types.changeParent.elements.currentParent.clear();
+    modal.types.changeParent.memberData.id = modal.types.changeParent.memberData.currentParent = modal.types.changeParent.memberData.newParent = null;
   },
-};
-
-modalTypes.changeParent.elements.saveButton.onclick = function() {
-  const props = 'id='+modalTypes.changeParent.newData.childId+'&parent_id='+modalTypes.changeParent.newData.newParentId;
-  ajaxQuery('backend/changeParent.php', props, function() {
-    familyTree.changeParent(modalTypes.changeParent.newData.childId, modalTypes.changeParent.newData.newParentId);
-    familyTree.showMember(modalTypes.changeParent.newData.childId);
-    closeModal();
-  });
-};
-
-familyTree.configureSearchField(modalTypes.changeParent.elements.searchField, 'backend/findMentorsByName.php', function(answer) {
-  if(modalTypes.changeParent.elements.currentParent.textContent != answer.name) {
-    modalTypes.changeParent.elements.currentParent.textContent = answer.name;
-    modalTypes.changeParent.newData.newParentId = answer.id;
-    modalTypes.changeParent.node.classList.add('newParent');
-  };
 });
 
 
-modalTypes.removeConfirmation = {
+modal.addType('removeConfirmation', {
   node: document.getElementById('removeConfirmation'),
   elements: { 
-    name: document.querySelector('#removeConfirmation .name'),
+    name: {
+      node: document.querySelector('#removeConfirmation .name'),
+      set: function(value) {
+        modal.types.removeConfirmation.elements.name.node.textContent = value;
+      },
+      clear: function() {
+        modal.types.removeConfirmation.elements.name.node.textContent = '';
+      }
+    },
     hasChildrenButtons: document.querySelectorAll('#removeConfirmation .ifHasChildren'),
     hasNoChildrenButton: document.querySelector('#removeConfirmation .ifHasNoChildren'),
   },
-  opener: function(memberData) {
-    modalTypes.removeConfirmation.elements.name.textContent = memberData.name;
-    if(memberData.children) modalTypes.removeConfirmation.node.classList.add('hasChildren');
-    modalTypes.removeConfirmation.elements.hasChildrenButtons[0].onclick = familyTree.removeMember.bind(familyTree, memberData.id, false);
-    modalTypes.removeConfirmation.elements.hasChildrenButtons[1].onclick = familyTree.removeMember.bind(familyTree, memberData.id, true);
-    modalTypes.removeConfirmation.elements.hasNoChildrenButton.onclick = familyTree.removeMember.bind(familyTree, memberData.id);
+  opener: function(settings) {
+    ajaxQuery('backend/getMemberById.php', 'id='+settings.memberId, function(response) {
+      const memberData = JSON.parse(response);
+      
+      modal.types.removeConfirmation.elements.name.set(memberData.name);
+      if(memberData.children) modal.types.removeConfirmation.node.classList.add('hasChildren');
+      
+      modal.types.removeConfirmation.elements.hasChildrenButtons[0].onclick = familyTree.removeMember.bind(familyTree, memberData.id, false);
+      modal.types.removeConfirmation.elements.hasChildrenButtons[1].onclick = familyTree.removeMember.bind(familyTree, memberData.id, true);
+      modal.types.removeConfirmation.elements.hasNoChildrenButton.onclick = familyTree.removeMember.bind(familyTree, memberData.id);
+    });
+  },
+  closer: function() {
+    modal.types.removeConfirmation.elements.name.clear();
+    modal.types.removeConfirmation.node.classList.remove('hasChildren');
   }
-};
+});
