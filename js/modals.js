@@ -115,6 +115,42 @@ modal.addType('memberInfo', {
         modal.types.memberInfo.elements.family.logoNode.style.backgroundImage = 'url(../img/family.svg)';
         modal.types.memberInfo.elements.family.valueNode.textContent = '';
       }
+    },
+    birthday: {
+      node: document.querySelector('#memberInfo .birthday'),
+      dateNode: document.querySelector('#memberInfo .birthday .date'),
+      ageNode: document.querySelector('#memberInfo .birthday .age'),
+      set: function(value) {
+        if(!value) {
+          modal.types.memberInfo.elements.birthday.node.classList.add('hidden');
+          return;
+        };
+        
+        const birthday = new Date(value);
+        const day = birthday.getDate() > 9 ? birthday.getDate() : '0' + birthday.getDate();
+        const month = birthday.getMonth() > 9 ? birthday.getMonth() + 1 : '0' + (birthday.getMonth() + 1);
+        modal.types.memberInfo.elements.birthday.dateNode.textContent = day + '.' + month + '.' + birthday.getFullYear();
+        
+        const ageDate = new Date(Date.now() - birthday.getTime());
+        var age = Math.abs(ageDate.getFullYear() - 1970);
+        switch(age%10) {
+          case 1: age += ' рік'; break;
+          case 2:
+          case 3:
+          case 4: age += ' роки'; break;
+          case 5:
+          case 6:
+          case 7:
+          case 8:
+          case 9:
+          case 0: age += ' років';
+        };
+        modal.types.memberInfo.elements.birthday.ageNode.textContent = age;
+      },
+      clear: function() {
+        modal.types.memberInfo.elements.birthday.dateNode.textContent = modal.types.memberInfo.elements.birthday.ageNode.textContent = '';
+        modal.types.memberInfo.elements.birthday.node.classList.remove('hidden');
+      }
     }
   },
   init: function() {
@@ -133,6 +169,7 @@ modal.addType('memberInfo', {
       if(memberData.image) modal.types.memberInfo.elements.img.set(memberData.image);
       modal.types.memberInfo.elements.name.set(memberData.name, memberData.active);
       modal.types.memberInfo.elements.statusDots.set(memberData.status);
+      modal.types.memberInfo.elements.birthday.set(memberData.birthday);
       modal.types.memberInfo.elements.recruitment.set(memberData.rec_season, memberData.rec_year);
       modal.types.memberInfo.elements.family.set(memberData.family_name, memberData.family_logo);
     });

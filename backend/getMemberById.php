@@ -21,6 +21,7 @@ if($res->num_rows > 0) {
       "mentor_id" => $memberData["mentor_id"],
       "mentor_name" => $memberData["mentor_name"],
       "name" => $memberData['name'],
+      "birthday" => $memberData['birthday'],
       "image" => $memberData["image"],
       "status" => $memberData["status"],
       "active" => $memberData["active"] ? true : false,

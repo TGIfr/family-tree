@@ -78,11 +78,13 @@ button:hover {
 #modal .content .row {
   display: flex;
   justify-content: space-between;
+  flex-wrap: wrap;
   width: 100%;
   margin-top: 20px;
 }
 
 #modal .content .row > div {
+  flex-shrink: 0;
   width: 49%;
   position: relative;
   box-sizing: border-box;
@@ -314,7 +316,7 @@ button:hover {
 #editMember .caption,
 #memberInfo .caption {
   font-size: 12px;
-  margin: 2px 0;
+  margin: 2px 0 4px;
   color: #777;
 }
 
@@ -334,12 +336,14 @@ button:hover {
 }
 
 #memberInfo .recruitment,
-#memberInfo .family {
+#memberInfo .family,
+#memberInfo .birthday {
   padding-left: 40px;
 }
 
 #memberInfo .recruitment:before,
-#memberInfo .family .logo {
+#memberInfo .family .logo,
+#memberInfo .birthday:before {
   content: '';
   position: absolute;
   left: 0;
@@ -370,6 +374,31 @@ button:hover {
 
 #editMember .family select {
   width: 100%;
+}
+
+#memberInfo .birthday:before {
+  background-image: url(../img/birthday.svg);
+}
+
+#memberInfo .birthday .age {
+  font-size: 12px;
+  color: #777;
+  margin-left: 4px;
+  font-weight: 400;
+  white-space: nowrap;
+}
+
+#editMember .birthday .value {
+  display: flex;
+}
+
+#editMember .birthday .value input {
+  width: 25%;
+  margin-right: 2px;
+}
+
+#editMember .birthday .value input.year {
+  width: 50%;
 }
 
 #editMember .butonsContainer {
@@ -472,16 +501,17 @@ button:hover {
 }
 
 @media screen and (max-width: 420px) {
+  #modal .content .row > div {
+    width: auto;
+    max-width: 100%;
+  }
+  
   #modal .content {
     width: 90vw;
   }
   
   #modal .content .row {
     flex-wrap: wrap;
-  }
-  
-  #modal .content .row > div {
-    width: auto;
   }
   
   #memberInfo .status .line,

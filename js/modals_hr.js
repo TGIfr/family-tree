@@ -169,6 +169,31 @@ modal.addType('editMember', {
         };
       }
     },
+    birthday: {
+      dayInputNode: document.querySelector('#editMember .birthday .day'),
+      monthInputNode: document.querySelector('#editMember .birthday .month'),
+      yearInputNode: document.querySelector('#editMember .birthday .year'),
+      set: function(date) {
+        const birthday = new Date(date);
+        modal.types.editMember.elements.birthday.dayInputNode.value = birthday.getDate();
+        modal.types.editMember.elements.birthday.monthInputNode.value = birthday.getMonth() + 1;
+        modal.types.editMember.elements.birthday.yearInputNode.value = birthday.getFullYear();
+      },
+      clear: function() {
+        modal.types.editMember.elements.birthday.dayInputNode.value = modal.types.editMember.elements.birthday.monthInputNode.value = modal.types.editMember.elements.birthday.yearInputNode.value = '';
+      },
+      init: function() {
+        modal.types.editMember.elements.birthday.dayInputNode.oninput = modal.types.editMember.elements.birthday.monthInputNode.oninput = modal.types.editMember.elements.birthday.yearInputNode.oninput = function() {
+          if(!modal.types.editMember.elements.birthday.yearInputNode.value || !modal.types.editMember.elements.birthday.monthInputNode.value  || !modal.types.editMember.elements.birthday.dayInputNode.value) {
+            modal.types.editMember.memberData.setNew('birthday', null);
+            return;
+          };
+            
+          const value = modal.types.editMember.elements.birthday.yearInputNode.value + '-' + modal.types.editMember.elements.birthday.monthInputNode.value + '-' + modal.types.editMember.elements.birthday.dayInputNode.value;
+          modal.types.editMember.memberData.setNew('birthday', value);
+        };
+      }
+    },
     saveButton: {
       node: document.querySelector('#editMember .save'),
       init: function() {
@@ -206,6 +231,7 @@ modal.addType('editMember', {
 
       if(memberData.image) modal.types.editMember.elements.img.set('img/members/' + memberData.image);
       modal.types.editMember.elements.name.set(memberData.name);
+      if(memberData.birthday) modal.types.editMember.elements.birthday.set(memberData.birthday);
       modal.types.editMember.elements.activityIndicator.set(memberData.active);
       modal.types.editMember.elements.statusDots.set(memberData.status);
       if(memberData.rec_season || memberData.rec_year) modal.types.editMember.elements.recruitment.set(memberData.rec_season, memberData.rec_year);

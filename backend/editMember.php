@@ -8,6 +8,10 @@ else $id = quotemeta($_POST['id']);
 $props = [];
 if(isset($_POST['image'])) $props[] = "image = '".quotemeta($_POST['image'])."'";
 if(isset($_POST['name'])) $props[] = "name = '".quotemeta($_POST['name'])."'";
+if(isset($_POST['birthday'])) {
+  $value = $_POST['birthday'] == 'null' ? "NULL" : "'".quotemeta($_POST['birthday'])."'";
+  $props[] = "birthday = ".$value;
+};
 if(isset($_POST['active'])) $props[] = "active = ".quotemeta($_POST['active']);
 if(isset($_POST['status'])) $props[] = "status = ".quotemeta($_POST['status']);
 if(isset($_POST['rec_season'])) $props[] = "rec_season = ".quotemeta($_POST['rec_season']);
@@ -17,6 +21,11 @@ if(isset($_POST['family_id'])) $props[] = "family_id = ".quotemeta($_POST['famil
 $query = "UPDATE member SET ";
 $query .= implode(", ", $props);
 $query .= " WHERE id = $id";
+
+echo $query;
+
+$connection->query($query);
+$connection->close();
 
 if(isset($_POST['image'])) {
   $ext = explode('.', $_POST['image'])[1];
@@ -28,8 +37,4 @@ if(isset($_POST['image'])) {
      
   rename($tempPath, $newPath);
 };
-
-$connection->query($query);
-
-$connection->close();
 ?>

@@ -7,6 +7,7 @@ function createMember($memberData, $dbconn) {
     "id" => $memberData["id"],
     "mentor_id" => $memberData["mentor_id"],
     "name" => $memberData['name'],
+    "birthday" => $memberData['birthday'],
     "image" => $memberData["image"],
     "status" => $memberData["status"],
     "active" => $memberData["active"] ? true : false,

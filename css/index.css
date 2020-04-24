@@ -194,6 +194,7 @@ body, html {
   background-position: center;
   background-size: 60%;
   background-color: #53b6f4;
+  transition: all .3s ease;
 }
 
 #familyTree .settings .removeMember {
@@ -374,5 +375,10 @@ body, html {
     top: 15px;
     left: 15px;
     width: calc(100% - 30px);
+  }
+  
+  #familyTree .description .settings {
+    opacity: 1;
+    left: 50%;
   }
 }

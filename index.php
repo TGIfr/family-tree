@@ -36,6 +36,10 @@
           <div class="caption">Family</div>
           <div class="value"></div>
         </div>
+        <div class="birthday">
+          <div class="caption">Birthday</div>
+          <div class="value"><span class="date"></span><span class="age"></span></div>
+        </div>
       </div>
     </div>
     <?php if($HR_mode): ?>
@@ -73,6 +77,14 @@
             <select>
               <option value="null">Нема</option>
             </select>
+          </div>
+        </div>
+        <div class="birthday">
+          <div class="caption">Birthday</div>
+          <div class="value">
+            <input type="number" class="day" placeholder="DD" min="1" max="31">
+            <input type="number" class="month" placeholder="MM" min="1" max="12">
+            <input type="number" class="year" placeholder="YYYY" min="1990">
           </div>
         </div>
       </div>
