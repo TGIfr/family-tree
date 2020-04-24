@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Сімейне Дерево</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700;900&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" sizes="16x16" href="/img/favicon.ico">
   <link rel="stylesheet" href="css/reset.css">
   <link rel="stylesheet" href="css/index.css">
@@ -41,7 +42,7 @@
     <div class="content" id="editMember">
       <label class="picture"><img src=""><input class="imageLoad" type="file" name="pic"></label>
       <input type="checkbox" id="activityIndicatorInput">
-      <label for="activityIndicatorInput" class="activityIndicator">Active</label>
+      <label for="activityIndicatorInput" class="activityIndicator">active</label>
       <input type="text" class="name">
       <div class="status">
         <div class="dot"><span>Observer</span></div>
@@ -82,7 +83,7 @@
     </div>
     <div class="content" id="removeConfirmation">
       <p>Ви впевнені що хочете видалити мембера <span class="name"></span>?</p>
-      <div class="options">
+      <div class="buttonsContainer">
         <button class="red ifHasChildren">Лише цього мембера</button>
         <button class="red ifHasChildren">Цього мембера і всіх нащадків</button>
         <button class="red ifHasNoChildren">Так</button>

@@ -18,7 +18,9 @@ function ajaxQuery(url, params, sucCallback, file) {
 
   xhr.onreadystatechange = function(){
     if(xhr.readyState == 4) {
-      if(xhr.status == 200) sucCallback(xhr.response);
+      if(xhr.status == 200) {
+        if(sucCallback) sucCallback(xhr.response);
+      }
       else if(xhr.status == 404) throw Error('Error: cannot find required script!');
       else throw Error('Error: server response: '+ xhr.status);
     }      

@@ -112,12 +112,22 @@ modal.addType('memberInfo', {
       },
       clear: function() {
         modal.types.memberInfo.elements.family.node.className = 'family';
-        modal.types.memberInfo.elements.family.logoNode.style.backgroundImage = 'none';
+        modal.types.memberInfo.elements.family.logoNode.style.backgroundImage = 'url(../img/family.svg)';
         modal.types.memberInfo.elements.family.valueNode.textContent = '';
       }
     }
   },
+  init: function() {
+    setTimeout(function() {
+      if(window.location.hash.includes('#member')) {
+        const id = window.location.hash.match(/\d+/g)[0];
+        familyTree.showMember(id);
+        modal.open('memberInfo', {memberId: id});
+      };
+    }, 1000);
+  },
   opener: function(settings) {
+    if(!window.location.hash.includes('#member')) window.location.hash = 'member' + settings.memberId;
     ajaxQuery('backend/getMemberById.php', 'id='+settings.memberId, function(response) {
       const memberData = JSON.parse(response);
       if(memberData.image) modal.types.memberInfo.elements.img.set(memberData.image);
@@ -128,6 +138,7 @@ modal.addType('memberInfo', {
     });
   },
   closer: function() {
+    history.pushState("", document.title, window.location.pathname + window.location.search);
     for(let element in modal.types.memberInfo.elements)
       modal.types.memberInfo.elements[element].clear();
   }

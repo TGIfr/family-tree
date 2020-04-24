@@ -1,18 +1,5 @@
-@font-face {
-  font-family: 'Tahoma';
-  src: url(../fonts/tahoma.ttf);
-  font-weight: normal;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: 'Tahoma';
-  src: url(../fonts/tahomabd.ttf);
-  font-weight: bold;
-  font-style: normal;
-}
-
 body, html {
+  font-family: 'Roboto';
   overflow: hidden;
   height: 100%;
 }
@@ -47,9 +34,8 @@ body, html {
 }
 
 #familyTree {
-  font-family: 'Tahoma';
   display: inline-flex;
-  padding: 30vh 4vw 4vw;
+  padding: 30vh 20px 20px;
   box-sizing: border-box;
 }
 
@@ -66,7 +52,7 @@ body, html {
   position: absolute;
   height: 1px;
   background: #999;
-  top: -1vw;
+  top: -15px;
 }
 
 #familyTree .member:first-child:before {
@@ -92,7 +78,7 @@ body, html {
   content: '';
   position: absolute;
   width: 1px;
-  height: 1vw;
+  height: 15px;
   background: #999;
   left: 50%;
   bottom: 100%;
@@ -101,7 +87,7 @@ body, html {
 
 #familyTree > .member {
   border-right: 1px solid #eee;
-  padding: 1vw 2vw 0;
+  padding: 15px 20px 0;
 }
 
 #familyTree > .member:last-child {
@@ -119,16 +105,16 @@ body, html {
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 0 2vw .8vw;
+  margin: 0 20px 10px;
   transition: all .3s ease;
 }
 
 #familyTree .member .picture {
-  width: 6vw;
-  height: 7.5vw;
+  width: 85px;
+  height: 105px;
   border-radius: 50%;
   overflow: hidden;
-  margin-bottom: 1vw;
+  margin-bottom: 10px;
   position: relative;
   transition: all .3s ease;
   background: url('../img/default.jpg') no-repeat center;
@@ -136,10 +122,6 @@ body, html {
 }
 
 #familyTree .member .picture img {
-  -webkit-user-drag: none;
-  -khtml-user-drag: none;
-  -moz-user-drag: none;
-  -o-user-drag: none;
   user-drag: none;
   width: 100%;
   height: 100%;
@@ -150,28 +132,28 @@ body, html {
   content: '';
   position: absolute;
   z-index: 2;
-  top: 53%;
+  top: 56%;
   left: 50%;
-  margin-left: -2.9vw;
-  width: .7vw;
-  height: .7vw;
-  border: .2vw solid #fff;
+  margin-left: -40px;
+  width: 10px;
+  height: 10px;
+  border: 3px solid #fff;
   border-radius: 50%;
   background: #75BF1E;
   transition: all .3s ease;
 }
 
 #familyTree .member .name {
-  font-size: .8vw;
+  font-size: 12px;
   font-weight: bold;
   color: #333;
-  margin-bottom: .5vw;
+  margin-bottom: 7px;
   white-space: nowrap;
   transition: all .3s ease;
 }
 
 #familyTree .member .status {
-  font-size: .7vw;
+  font-size: 10px;
   font-weight: bold;
   color: #777;
   transition: all .3s ease;
@@ -184,10 +166,10 @@ body, html {
 
 #familyTree .settings {
   position: absolute;
-  top: 37%;
+  top: 36%;
   transform: translateY(-50%);
   left: 40%;
-  padding-left: 3.5vw;
+  padding-left: 50px;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -202,9 +184,9 @@ body, html {
 }
 
 #familyTree .settings > div {
-  width: 2vw;
-  height: 2vw;
-  margin: .3vw 0;
+  width: 25px;
+  height: 25px;
+  margin: 3px 0;
   flex-shrink: 0;
   border-radius: 50%;
   cursor: pointer;
@@ -233,22 +215,22 @@ body, html {
 
 #familyTree .opener {
   cursor: pointer;
-  height: 1.2vw;
-  width: 1.2vw;
+  height: 18px;
+  width: 18px;
+  line-height: 18px;
   border-radius: 50%;
   background: #0071B9;
   color: #fff;
-  font-size: .8vw;
+  font-size: 13px;
   font-weight: bold;
   text-align: center;
-  line-height: 1.2vw;
-  margin-bottom: 1vw;
+  margin-bottom: 8px;
   overflow: hidden;
   transition: all .3s ease;
 }
 
 #familyTree .children {
-  padding-top: 1.5vw;
+  padding-top: 30px;
   display: flex;
   align-items: flex-start;
   position: relative;
@@ -258,11 +240,11 @@ body, html {
 #familyTree .children:before {
   content: '';
   position: absolute;
-  top: -.5vw;
+  top: 0px;
   left: 50%;
   width: 1px;
   background: #999;
-  height: 1vw;
+  height: 15px;
   transition: all .3s ease;
 }
 
@@ -326,27 +308,27 @@ body, html {
 
 .searchField {
   position: relative;
-  width: 20vw;
 }
 
 .searchField:before {
   content: '';
   position: absolute;
   z-index: 3;
-  right: 1vw;
-  top: .8vw;
+  right: 12px;
+  top: 11px;
   display: block;
-  width: 1.5vw;
-  height: 1.5vw;
+  width: 20px;
+  height: 20px;
   background: url(../img/search.svg) no-repeat;
   background-size: contain;
 }
 
 .searchField input {
+  font-size: 12px;
   position: relative;
   z-index: 2;
-  padding: 1vw;
-  border-radius: .4vw;
+  padding: 13px;
+  border-radius: 5px;
   border: 1px solid #aaa;
   width: 100%;
   box-sizing: border-box;
@@ -358,16 +340,16 @@ body, html {
   top: 100%;
   left: 0;
   width: 100%;
-  max-height: 50vh;
+  max-height: 80vh;
   overflow: hidden;
-  box-shadow: 0 0 2vw rgba(0,0,0,.1);
+  box-shadow: 0 0 10px rgba(0,0,0,.1);
 }
 
 .searchField .answer {
   cursor: pointer;
   width: 100%;
-  font: .8vw 'Tahoma';
-  padding: .7vw 1vw;
+  font-size: 12px;
+  padding: 8px 13px;
   box-sizing: border-box;
   color: #333;
   background: #fff;
@@ -380,100 +362,17 @@ body, html {
 
 .searchField#findMember {
   position: absolute;
-  top: 3vw;
-  left: 3vw;
+  width: 250px;
+  top: 30px;
+  left: 30px;
   z-index: 5;
   box-shadow: 0 0 2vw rgba(0,0,0,.1);
 }
 
-@media screen and (max-width: 800px) {
-  #familyTree {
-    padding: 30vh 10vw 10vw;
-  }
-  
-  #familyTree > .member {
-    padding: 8vw 8vw 2vw;
-  }
-  
-  #familyTree .member:before {
-    top: -8vw;
-  }
-  
-  #familyTree .member:after {
-    height: 8vw;
-  }
-  
-  #familyTree .member .description {
-    margin: 0 8vw 12vw;
-  }
-  
-  #familyTree .member .picture {
-    width: 32vw;
-    height: 40vw;
-    margin-bottom: 4vw;
-  }
-  
-  #familyTree .member.active > .description:before {
-    width: 3.2vw;
-    height: 3.2vw;
-    border-width: 1.2vw;
-    top: 57%;
-    margin-left: -14.8vw;
-  }
-  
-  #familyTree .member .name {
-    font-size: 4vw;
-    margin-bottom: 2vw;
-  }
-  
-  #familyTree .member .status {
-    font-size: 3.2vw;
-  }
-  
-  #familyTree .opener {
-    height: 4.8vw;
-    width: 4.8vw;
-    transform: translateY(-8vw);
-    font-size: 3.2vw;
-    line-height: 4.8vw;
-  }
-  
-  #familyTree .children {
-    padding-top: 8vw;
-  }
-  
-  #familyTree .children:before {
-    top: -6vw;
-    height: 6vw;
-  }
-  
-  .searchField:before {
-    right: 4vw;
-    top: 3.5vw;
-    width: 6vw;
-    height: 6vw;
-  }
-  
-  .searchField input {
-    border-radius: 1.6vw;
-    font-size: 4vw;
-    padding: 4vw;
-    box-sizing: border-box;
-  }
-  
-  .searchField .results {
-    max-height: 80vh;
-  }
-  
-  .searchField .answer {
-    font-size: 3.2vw;
-    padding: 2.8vw 4vw;
-  }
-  
+@media screen and (max-width: 420px) {
   .searchField#findMember {
-    top: 5vw;
-    left: 5vw;
-    width: 90vw;
-    box-shadow: 0 0 8vw rgba(0,0,0,.1);
+    top: 15px;
+    left: 15px;
+    width: calc(100% - 30px);
   }
 }

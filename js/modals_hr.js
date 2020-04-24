@@ -6,7 +6,7 @@ modal.addType('editMember', {
     img: {
       node: document.querySelector('#editMember .picture img'),
       set: function(fileName) {
-        modal.types.editMember.elements.img.node.src = 'img/members/' + fileName;
+        modal.types.editMember.elements.img.node.src = fileName;
         modal.types.editMember.node.classList.add('hasImage');
       },
       clear: function() {
@@ -32,22 +32,27 @@ modal.addType('editMember', {
             alert('Error: Exceeded size 2MB');
             return;
           };
-
+          
           var imgName = 'member'+modal.types.editMember.memberData.current.id;
           const currentSrc = modal.types.editMember.elements.img.node.getAttribute('src');
           if(currentSrc) {
             const srcParts = currentSrc.split('/');
             imgName = srcParts[srcParts.length - 1].split('.')[0];
           };
+          
+          switch(newImage.type) {
+            case 'image/jpg':
+            case 'image/jpeg': imgName += '.jpg'; break;
+            case 'image/png': imgName += '.png';
+          };
 
           var formData = new FormData();
           formData.append('newImage', newImage, this.value);
           formData.append('id', modal.types.editMember.memberData.current.id);
-          formData.append('name', imgName);
 
-          ajaxQuery('backend/uploadPicture.php', formData, function(src) {
-            modal.types.editMember.elements.img.set(src);
-            familyTree.changeMember({id: modal.types.editMember.memberData.current.id, img: src});
+          ajaxQuery('backend/uploadPicture.php', formData, function(tempSrc) {
+            modal.types.editMember.elements.img.set(tempSrc);
+            modal.types.editMember.memberData.new.image = imgName;
           }, true);
         };
       }
@@ -199,7 +204,7 @@ modal.addType('editMember', {
       const memberData = JSON.parse(response);
       modal.types.editMember.memberData.current = memberData;
 
-      if(memberData.image) modal.types.editMember.elements.img.set(memberData.image);
+      if(memberData.image) modal.types.editMember.elements.img.set('img/members/' + memberData.image);
       modal.types.editMember.elements.name.set(memberData.name);
       modal.types.editMember.elements.activityIndicator.set(memberData.active);
       modal.types.editMember.elements.statusDots.set(memberData.status);
@@ -211,6 +216,8 @@ modal.addType('editMember', {
     for(let element in modal.types.editMember.elements)
       if(modal.types.editMember.elements[element].clear)
         modal.types.editMember.elements[element].clear();
+    
+    ajaxQuery('backend/deleteTempPicture.php', 'id='+modal.types.editMember.memberData.current.id);
     
     modal.types.editMember.memberData.current = modal.types.editMember.memberData.new = {};
   },

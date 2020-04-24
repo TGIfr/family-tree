@@ -80,7 +80,6 @@ class FamilyTree {
   
   //отримати DOM елемент мембера з id
   getMemberBlockById(id) {
-    if(!id) return null;
     return document.getElementById('member'+id);
   }
   
@@ -94,14 +93,14 @@ class FamilyTree {
     
     const memberBlock = this.getMemberBlockById(newMemberData.id);
     
-    if(newMemberData.img) {
+    if(newMemberData.image) {
       var pictureBlock = memberBlock.querySelector('.picture');
       var imgBlock = pictureBlock.querySelector('img');
       if(!imgBlock) {
         var imgBlock = document.createElement('img');
         pictureBlock.append(imgBlock)
       };
-      imgBlock.src = newMemberData.img;
+      imgBlock.src = 'img/members/' + newMemberData.image;
     };
     
     if(newMemberData.name)
@@ -396,8 +395,6 @@ class FamilyTree {
       var clickCoords = {x: 0, y:0};
 
       mountBlock.node.onmousedown = (function(e) {
-        this.resetHighlightedMember();
-        
         mountBlock.node.classList.add('grabbing');
         clicked = true;
         clickCoords.x = e.pageX;
@@ -419,6 +416,8 @@ class FamilyTree {
         };
       };
     };
+    
+    document.addEventListener('click', this.resetHighlightedMember);
   }
   
   configureSearchField(block, dataSource, answerOnClick) {
@@ -447,9 +446,6 @@ class FamilyTree {
             block.classList.add('answer');
             block.textContent = answer.name;
             block.addEventListener('click', answerOnClick.bind(null, answer));
-            block.addEventListener('click', function() {
-              resultsList.innerHTML = input.value = '';
-            });
             resultsList.append(block);
           });
 
@@ -460,5 +456,9 @@ class FamilyTree {
         });
       };
     };
+    
+    document.addEventListener('click', function() {
+      resultsList.innerHTML = input.value = '';
+    });
   };
 }

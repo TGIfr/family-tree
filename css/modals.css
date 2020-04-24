@@ -1,13 +1,13 @@
 button {
   cursor: pointer;
-  padding: .5vw 1vw;
+  padding: 10px;
   border: 0;
   text-transform: uppercase;
-  font: .8vw 'Tahoma';
-  letter-spacing: .1vw;
+  font-size: 10px;
+  letter-spacing: 1px;
   line-height: 150%;
   background: #53b6f4;
-  border-radius: .5vw;
+  border-radius: 5px;
   color: #fff;
   opacity: 1;
   transition: opacity .2s;
@@ -22,7 +22,7 @@ button:hover {
 }
 
 #modal {
-  font: 1.1vw 'Tahoma';
+  font-family: 'Roboto';
   color: #333;
   position: fixed;
   z-index: 10;
@@ -51,13 +51,13 @@ button:hover {
   top: 50%;
   left: 50%;
   transform: translate(-50%,-50%);
-  border-radius: .8vw;
+  border-radius: 10px;
   background: #fff;
   opacity: 0;
   box-sizing: border-box;
-  padding: 2vw;
-  width: 30vw;
-  box-shadow: 0 0 10vw rgba(0,0,0,.3);
+  padding: 25px;
+  width: 360px;
+  box-shadow: 0 0 50px rgba(0,0,0,.3);
   flex-direction: column;
   align-items: center;
 }
@@ -79,7 +79,14 @@ button:hover {
   display: flex;
   justify-content: space-between;
   width: 100%;
-  margin: 2vw 0 0;
+  margin-top: 20px;
+}
+
+#modal .content .row > div {
+  width: 49%;
+  position: relative;
+  box-sizing: border-box;
+  margin-top: 15px;
 }
 
 #modal .content .hidden {
@@ -91,8 +98,8 @@ button:hover {
   display: none;
   border-radius: 50%;
   overflow: hidden;
-  width: 10vw;
-  height: 10vw;
+  width: 110px;
+  height: 110px;
   position: absolute;
   top: 0;
   left: 50%;
@@ -109,8 +116,9 @@ button:hover {
 #editMember .picture:after {
   content: 'CHANGE';
   text-align: center;
-  font: 500 .8vw 'Tahoma';
-  letter-spacing: .2vw;
+  font-weight: 300;
+  font-size: 11px;
+  letter-spacing: 1.5px;
   line-height: 340%;
   color: #fff;
   position: absolute;
@@ -118,7 +126,7 @@ button:hover {
   bottom: 0;
   left: 0;
   width: 100%;
-  height: 3vw;
+  height: 40px;
   background: rgba(0,0,0,.6);
   transition: transform .2s;
 }
@@ -149,26 +157,31 @@ button:hover {
 
 #memberInfo.hasImage,
 #editMember.content {
-  padding-top: 6vw;
+  padding-top: 65px;
 }
 
 #memberInfo .name,
 #editMember .name {
   display: inline-block;
   position: relative;
-  font: bold 2vw 'Tahoma';
+  font-weight: 900;
+  font-size: 24px;
   text-align: center;
   color: #333;
+}
+
+#editMember .name {
+  width: 100%;
 }
 
 #memberInfo .name.active:before {
   content: '';
   position: absolute;
   top: 56%;
-  left: -1.5vw;
+  left: -20px;
   transform: translateY(-50%);
-  width: .8vw;
-  height: .8vw;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: #75BF1E;
 }
@@ -182,11 +195,13 @@ button:hover {
 }
 
 #editMember .activityIndicator {
+  user-select: none;
+  font-size: 12px;
   cursor: pointer;
   position: absolute;
-  top: 2vw;
-  left: 2vw;
-  padding-left: 2.7vw;
+  top: 23px;
+  left: 23px;
+  padding-left: 30px;
   color: #aaa;
 }
 
@@ -197,10 +212,10 @@ button:hover {
   left: 0;
   top: 55%;
   transform: translateY(-50%);
-  width: 2vw;
-  height: 1.2vw;
+  width: 23px;
+  height: 14px;
   border: 1px solid #aaa;
-  border-radius: .6vw;
+  border-radius: 7.5px;
   transition: all .2s;
 }
 
@@ -208,11 +223,11 @@ button:hover {
   content: '';
   display: block;
   position: absolute;
-  left: .3vw;
+  left: 3px;
   top: 55%;
   transform: translateY(-50%);
-  width: .8vw;
-  height: .8vw;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: #aaa;
   transition: all .2s;
@@ -228,13 +243,13 @@ button:hover {
 
 #editMember #activityIndicatorInput:checked ~ .activityIndicator:after {
   background: #75bf1e;
-  left: 1.1vw;
+  left: 13px;
 }
 
 #memberInfo .status,
 #editMember .status {
-  margin: 2.5vw 0 2vw;
-  width: 80%;
+  margin: 20px 0 5px;
+  width: 85%;
   display: flex;
   justify-content: space-around;
   align-items: center;
@@ -243,11 +258,11 @@ button:hover {
 #memberInfo .status .dot,
 #editMember .status .dot {
   position: relative;
-  width: .5vw;
-  height: .5vw;
-  margin: 0 1px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
   border: 1px solid #aaa;
+  background: transparent;
   transition: all .1s;
 }
 
@@ -258,7 +273,7 @@ button:hover {
 #memberInfo .status .line,
 #editMember .status .line {
   height: 1px;
-  width: 4vw;
+  width: 40px;
   background: #ccc;
 }
 
@@ -270,9 +285,8 @@ button:hover {
 #memberInfo .status .dot.active,
 #editMember .status .dot.active,
 #editMember .status .dot:hover {
-  width: .8vw;
-  height: .8vw;
-  margin: 0;
+  width: 10px;
+  height: 10px;
   background: #0071b9;
   border: none;
 }
@@ -281,10 +295,11 @@ button:hover {
 #editMember .status .dot span {
   position: absolute;
   top: 0;
-  padding-top: 1vw;
+  padding-top: 12px;
   left: 50%;
   transform: translateX(-50%);
-  font: .8vw 'Tahoma';
+  font-size: 10px;
+  color: #777;
   transition: all .1s;
 }
 
@@ -293,27 +308,20 @@ button:hover {
 #editMember .status .dot:hover span {
   color: #0071b9;
   font-weight: bold;
-  padding-top: 1.1vw;
-}
-
-#editMember .row > div:not(.hidden),
-#memberInfo .row > div:not(.hidden) {
-  flex-shrink: 0;
-  max-width: 48%;
-  min-width: 40%;
-  position: relative;
-  box-sizing: border-box;
+  padding-top: 15px;
 }
 
 #editMember .caption,
 #memberInfo .caption {
-  font: 1vw 'Tahoma';
+  font-size: 12px;
+  margin: 2px 0;
   color: #777;
 }
 
 #editMember .value,
 #memberInfo .value {
-  font: bold 1.1vw 'Tahoma';
+  font-weight: bold;
+  font-size: 14px;
   color: #333;
 }
 
@@ -322,21 +330,23 @@ button:hover {
 }
 
 #editMember select {
-  font-size: 1vw;
+  font-size: 12px;
 }
 
-#memberInfo .recruitment {
-  padding-left: 3vw;
+#memberInfo .recruitment,
+#memberInfo .family {
+  padding-left: 40px;
 }
 
-#memberInfo .recruitment:before {
+#memberInfo .recruitment:before,
+#memberInfo .family .logo {
   content: '';
   position: absolute;
   left: 0;
-  top: .2vw;
+  top: 0;
   display: block;
-  width: 2.5vw;
-  height: 2.5vw;
+  width: 33px;
+  height: 33px;
   background-repeat: no-repeat;
   background-position: center;
   background-size: contain;
@@ -354,20 +364,8 @@ button:hover {
   width: 48%;
 }
 
-#memberInfo .family {
-  padding-left: 2.7vw;
-}
-
 #memberInfo .family .logo {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 2.5vw;
-  width: 2.5vw;
-  margin-top: .2vw;
-  background-repeat: no-repeat;
-  background-size: contain;
-  background-position: center;
+  background-image: url(../img/family.svg);
 }
 
 #editMember .family select {
@@ -377,7 +375,7 @@ button:hover {
 #editMember .butonsContainer {
   display: flex;
   justify-content: space-between;
-  margin-top: 2vw;
+  margin-top: 20px;
   width: 100%;
 }
 
@@ -385,31 +383,32 @@ button:hover {
   width: 48%;
 }
 
-#removeConfirmation {
+#removeConfirmation p {
   text-align: center;
-  width: 25vw;
-}
-
-#removeConfirmation.hasChildren {
-  width: 42vw;
+  font-size: 14px;
+  line-height: 20px;
 }
 
 #removeConfirmation .name {
   font-weight: bold;
 }
 
-#removeConfirmation .options {
+#removeConfirmation .buttonsContainer {
   display: flex;
   justify-content: space-between;
-  margin-top: 2vw;
+  margin-top: 20px;
   width: 100%;
 }
 
-#removeConfirmation .options button {
+#removeConfirmation .buttonsContainer button {
   width: 48%;
 }
 
-#removeConfirmation.hasChildren .options button {
+#removeConfirmation.hasChildren {
+  width: 450px;
+}
+
+#removeConfirmation.hasChildren .buttonsContainer button {
   width: 31%;
 }
 
@@ -422,15 +421,19 @@ button:hover {
   display: block;
 }
 
+#changeParent {
+  font-size: 14px;
+}
+
 #changeParent .currentParent {
   text-align: center;
-  margin-bottom: 2vw;
+  margin-bottom: 20px;
 }
 
 #changeParent .currentParent .value {
-  margin-top: .5vw;
+  margin-top: 5px;
   font-weight: bold;
-  font-size: 1.3vw;
+  font-size: 18px;
 }
 
 #changeParent .searchField {
@@ -443,7 +446,7 @@ button:hover {
 
 #changeParent .butonsContainer {
   display: flex;
-  margin-top: 1.5vw;
+  margin-top: 20px;
   width: 100%;
   justify-content: space-between;
 }
@@ -468,85 +471,37 @@ button:hover {
   opacity: 1;
 }
 
-@media screen and (max-width: 800px) {
+@media screen and (max-width: 420px) {
   #modal .content {
     width: 90vw;
-    border-radius: 2.4vw;
-    padding: 6vw;
   }
   
-  #memberInfo.hasImage {
-    padding-top: 18vw;
+  #modal .content .row {
+    flex-wrap: wrap;
   }
   
-  #memberInfo .picture {
-    width: 30vw;
-    height: 30vw;
+  #modal .content .row > div {
+    width: auto;
   }
   
-  #memberInfo .name {
-    font-size: 6vw;
+  #memberInfo .status .line,
+  #editMember .status .line {
+    width: 10vw;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  #removeConfirmation.hasChildren {
+    width: 90%;
   }
   
-  #memberInfo .name.active:before {
-    left: -4.5vw;
-    width: 2.4vw;
-    height: 2.4vw;
+  #removeConfirmation.hasChildren .buttonsContainer {
+    flex-direction: column;
+    margin-top: 10px;
   }
-  
-  #memberInfo .status {
-    margin: 7.5vw 0 4vw;
-  }
-  
-  #memberInfo .status .dot {
-    width: 1.5vw;
-    height: 1.5vw;
-  }
-  
-  #memberInfo .status .line {
-    width: 7vw;
-  }
-  
-  #memberInfo .status .dot.active {
-    width: 3vw;
-    height: 3vw;
-  }
-  
-  #memberInfo .status .dot span {
-    padding-top: 3vw;
-    font-size: 3vw;
-  }
-  
-  #memberInfo .status .dot.active span {
-    padding-top: 4vw;
-  }
-  
-  #memberInfo .caption {
-    font-size: 3vw;
-    margin-bottom: .6vw;
-  }
-  
-  #memberInfo .value {
-    font-size: 3.3vw;
-  }
-  
-  #memberInfo .recruitment,
-  #memberInfo .family {
-    padding-left: 9vw;
-  }
-  
-  #memberInfo .recruitment:before {
-    width: 7.5vw;
-    height: 7.5vw;
-  }
-  
-  #memberInfo .row > div:not(.hidden) {
-    margin-top: 5vw;
-  }
-  
-  #memberInfo .family .logo {
-    width: 7.5vw;
-    height: 7.5vw;
-    margin-right: 1.5vw;
+
+  #removeConfirmation.hasChildren .buttonsContainer button {
+    width: 100%;
+    margin-top: 10px;
   }
 }
