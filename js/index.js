@@ -30,3 +30,12 @@ function ajaxQuery(url, params, sucCallback, file) {
   if(!file) xhr.setRequestHeader('Content-type','application/x-www-form-urlencoded');
   xhr.send(params);
 };
+
+  
+setTimeout(function() {
+  if(window.location.hash.includes('#member')) {
+    const id = window.location.hash.match(/\d+/g)[0];
+    familyTree.showMember(id);
+    modal.open('memberInfo', {memberId: id});
+  };
+}, 1000);

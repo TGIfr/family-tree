@@ -40,6 +40,8 @@ modal.addType('memberInfo', {
     img: {
       node: document.querySelector('#memberInfo .picture img'),
       set: function(fileName) {
+        if(!fileName) return;
+        
         modal.types.memberInfo.elements.img.node.src = 'img/members/' + fileName;
         modal.types.memberInfo.node.classList.add('hasImage');
       },
@@ -128,7 +130,7 @@ modal.addType('memberInfo', {
         
         const birthday = new Date(value);
         const day = birthday.getDate() > 9 ? birthday.getDate() : '0' + birthday.getDate();
-        const month = birthday.getMonth() > 9 ? birthday.getMonth() + 1 : '0' + (birthday.getMonth() + 1);
+        const month = birthday.getMonth() > 8 ? birthday.getMonth() + 1 : '0' + (birthday.getMonth() + 1);
         modal.types.memberInfo.elements.birthday.dateNode.textContent = day + '.' + month + '.' + birthday.getFullYear();
         
         const ageDate = new Date(Date.now() - birthday.getTime());
@@ -151,27 +153,67 @@ modal.addType('memberInfo', {
         modal.types.memberInfo.elements.birthday.dateNode.textContent = modal.types.memberInfo.elements.birthday.ageNode.textContent = '';
         modal.types.memberInfo.elements.birthday.node.classList.remove('hidden');
       }
+    },
+    education: {
+      node: document.querySelector('#memberInfo .education'),
+      valueNode: document.querySelector('#memberInfo .education .value'),
+      set: function(faculty, year) {
+        if(!faculty && !year) {
+          modal.types.memberInfo.elements.education.node.classList.add('hidden');
+          return;
+        };
+        
+        var value = '';
+        if(faculty) {
+          value = faculty;
+          if(year) value += ', ';
+        };
+        if(year != null) {
+          if(year == 0) value += 'випускник';
+          else value += year + ' курс';
+        };
+        
+        modal.types.memberInfo.elements.education.valueNode.textContent = value;
+      },
+      clear: function() {
+        modal.types.memberInfo.elements.education.valueNode.textContent = '';
+        modal.types.memberInfo.elements.education.node.classList.remove('hidden');
+      }
+    },
+    socials: {
+      telegramNode: document.querySelector('#memberInfo .socials .telegram'),
+      instagramNode: document.querySelector('#memberInfo .socials .instagram'),
+      set: function(tgLink, instaLink) {
+        if(tgLink)
+          modal.types.memberInfo.elements.socials.telegramNode.href = 'https://t.me/' + tgLink;
+        else
+          modal.types.memberInfo.elements.socials.telegramNode.classList.add('hidden');
+        
+        if(instaLink)
+          modal.types.memberInfo.elements.socials.instagramNode.href = 'https://instagram.com/' + instaLink;
+        else
+          modal.types.memberInfo.elements.socials.instagramNode.classList.add('hidden');
+      },
+      clear: function() {
+        modal.types.memberInfo.elements.socials.telegramNode.href = modal.types.memberInfo.elements.socials.instagramNode.href = '';
+        modal.types.memberInfo.elements.socials.telegramNode.classList.remove('hidden');
+        modal.types.memberInfo.elements.socials.instagramNode.classList.remove('hidden');
+        
+      }
     }
-  },
-  init: function() {
-    setTimeout(function() {
-      if(window.location.hash.includes('#member')) {
-        const id = window.location.hash.match(/\d+/g)[0];
-        familyTree.showMember(id);
-        modal.open('memberInfo', {memberId: id});
-      };
-    }, 1000);
   },
   opener: function(settings) {
     if(!window.location.hash.includes('#member')) window.location.hash = 'member' + settings.memberId;
     ajaxQuery('backend/getMemberById.php', 'id='+settings.memberId, function(response) {
       const memberData = JSON.parse(response);
-      if(memberData.image) modal.types.memberInfo.elements.img.set(memberData.image);
+      modal.types.memberInfo.elements.img.set(memberData.image);
       modal.types.memberInfo.elements.name.set(memberData.name, memberData.active);
       modal.types.memberInfo.elements.statusDots.set(memberData.status);
       modal.types.memberInfo.elements.birthday.set(memberData.birthday);
       modal.types.memberInfo.elements.recruitment.set(memberData.rec_season, memberData.rec_year);
+      modal.types.memberInfo.elements.education.set(memberData.faculty, memberData.year_of_studying);
       modal.types.memberInfo.elements.family.set(memberData.family_name, memberData.family_logo);
+      modal.types.memberInfo.elements.socials.set(memberData.telegram, memberData.instagram);
     });
   },
   closer: function() {

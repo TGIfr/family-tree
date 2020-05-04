@@ -2,8 +2,8 @@
 
 $connection = (include 'DBconnection.php');
 
-if(!isset($_POST['name'])) echo 'error';
-else $needed_name = quotemeta($_POST['name']);
+if(!isset($_POST['query'])) echo 'error';
+else $needed_name = quotemeta($_POST['query']);
 
 $res = $connection->query("SELECT id, name FROM member WHERE name LIKE '%$needed_name%' ORDER BY name");
 

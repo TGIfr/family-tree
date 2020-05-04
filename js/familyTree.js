@@ -28,15 +28,21 @@ class FamilyTree {
   }
   
   init() {
-    ajaxQuery('/backend/getAllMembersData.php', null, (function(response) {
-      this.generate(JSON.parse(response));
-      this.configureMountBlock();
+    const familyTree = this;
+    
+    ajaxQuery('/backend/getAllMembersData.php', null, function(response) {
+      familyTree.generate(JSON.parse(response));
+      familyTree.configureMountBlock();
       
-      this.configureSearchField(document.getElementById('findMember'), '/backend/findMembersByName.php', (function(answer) {
-        this.resetHighlightedMember();
-        this.showMember(answer.id);
-      }).bind(this));
-    }).bind(this));
+      new DropDownSearch(document.getElementById('findMember'), '/backend/findMembersByName.php', function(answer) {
+        const block = document.createElement('div');
+        block.classList.add('answer');
+        block.textContent = answer.name;
+        block.addEventListener('click', familyTree.showMember.bind(familyTree, answer.id));
+        
+        return block;
+      });
+    });
   };
   
   resetHighlightedMember() {
@@ -45,6 +51,8 @@ class FamilyTree {
   };
   
   showMember(id) {
+    this.resetHighlightedMember();
+    
     //пошук блоку з таким ідентифікатором
     const memberBlock = this.getMemberBlockById(id);
 
@@ -419,46 +427,4 @@ class FamilyTree {
     
     document.addEventListener('click', this.resetHighlightedMember);
   }
-  
-  configureSearchField(block, dataSource, answerOnClick) {
-    var waiting = false;
-    const input = block.querySelector('input');
-    const results = block.querySelector('.results');
-    const resultsList = results.querySelector('.list');
-
-    const resultsScrollBar = Scrollbar.init(results, scrollbarOptions);
-
-    input.oninput = function() {
-      //очистити попередні результати
-      resultsList.innerHTML = '';
-
-      //якщо поле вводу не пусте і не очікується відповідь від попереднього запиту
-      if(input.value && !waiting) {
-        waiting = true;
-
-        //надсилання запиту для отримання даних про мемберів які мають в своєму імені текст з поля вводу
-        ajaxQuery(dataSource, 'name='+input.value, function(response) {
-          const answers = JSON.parse(response);
-
-          //виведення списку результатів
-          [].forEach.call(answers, function(answer) {
-            const block = document.createElement('div');
-            block.classList.add('answer');
-            block.textContent = answer.name;
-            block.addEventListener('click', answerOnClick.bind(null, answer));
-            resultsList.append(block);
-          });
-
-          //оновлення скролбару для результатів
-          resultsScrollBar.update();
-
-          waiting = false;
-        });
-      };
-    };
-    
-    document.addEventListener('click', function() {
-      resultsList.innerHTML = input.value = '';
-    });
-  };
 }

@@ -149,7 +149,8 @@ modal.addType('editMember', {
     family: {
       node: document.querySelector('#editMember .family select'),
       set: function(familyName) {
-        modal.types.editMember.elements.family.node.value = String(familyName);
+        if(familyName)
+          modal.types.editMember.elements.family.node.value = String(familyName);
       },
       clear: function() {
         modal.types.editMember.elements.family.node.value = 'null';
@@ -174,10 +175,12 @@ modal.addType('editMember', {
       monthInputNode: document.querySelector('#editMember .birthday .month'),
       yearInputNode: document.querySelector('#editMember .birthday .year'),
       set: function(date) {
-        const birthday = new Date(date);
-        modal.types.editMember.elements.birthday.dayInputNode.value = birthday.getDate();
-        modal.types.editMember.elements.birthday.monthInputNode.value = birthday.getMonth() + 1;
-        modal.types.editMember.elements.birthday.yearInputNode.value = birthday.getFullYear();
+        if(date) {
+          const birthday = new Date(date);
+          modal.types.editMember.elements.birthday.dayInputNode.value = birthday.getDate();
+          modal.types.editMember.elements.birthday.monthInputNode.value = birthday.getMonth() + 1;
+          modal.types.editMember.elements.birthday.yearInputNode.value = birthday.getFullYear();
+        };
       },
       clear: function() {
         modal.types.editMember.elements.birthday.dayInputNode.value = modal.types.editMember.elements.birthday.monthInputNode.value = modal.types.editMember.elements.birthday.yearInputNode.value = '';
@@ -191,6 +194,49 @@ modal.addType('editMember', {
             
           const value = modal.types.editMember.elements.birthday.yearInputNode.value + '-' + modal.types.editMember.elements.birthday.monthInputNode.value + '-' + modal.types.editMember.elements.birthday.dayInputNode.value;
           modal.types.editMember.memberData.setNew('birthday', value);
+        };
+      }
+    },
+    education: {
+      facultyNode: document.querySelector('#editMember .education .faculty'),
+      yearNode: document.querySelector('#editMember .education .year'),
+      set: function(faculty, year) {
+        modal.types.editMember.elements.education.facultyNode.value = faculty;
+        modal.types.editMember.elements.education.yearNode.value = year;
+      },
+      clear: function() {
+        modal.types.editMember.elements.education.facultyNode.value = modal.types.editMember.elements.education.yearNode.value = 'null';
+      },
+      init: function() {
+        modal.types.editMember.elements.education.facultyNode.oninput = function() {
+          modal.types.editMember.memberData.setNew('faculty', modal.types.editMember.elements.education.facultyNode.value);
+        };
+        
+        modal.types.editMember.elements.education.yearNode.oninput = function() {
+          modal.types.editMember.memberData.setNew('year_of_studying', modal.types.editMember.elements.education.yearNode.value);
+        };
+      }
+    },
+    socials: {
+      telegramNode: document.querySelector('#editMember .socials .telegram'),
+      instagramNode: document.querySelector('#editMember .socials .instagram'),
+      set: function(tgLink, instaLink) {
+        if(tgLink)
+          modal.types.editMember.elements.socials.telegramNode.value = tgLink;
+        
+        if(instaLink)
+          modal.types.editMember.elements.socials.instagramNode.value = instaLink;
+      },
+      clear: function() {
+        modal.types.editMember.elements.socials.telegramNode.value = modal.types.editMember.elements.socials.instagramNode.value = '';
+      },
+      init: function() {
+        modal.types.editMember.elements.socials.telegramNode.oninput = function() {
+          modal.types.editMember.memberData.setNew('telegram', modal.types.editMember.elements.socials.telegramNode.value);
+        };
+        
+        modal.types.editMember.elements.socials.instagramNode.oninput = function() {
+          modal.types.editMember.memberData.setNew('instagram', modal.types.editMember.elements.socials.instagramNode.value);
         };
       }
     },
@@ -231,11 +277,13 @@ modal.addType('editMember', {
 
       if(memberData.image) modal.types.editMember.elements.img.set('img/members/' + memberData.image);
       modal.types.editMember.elements.name.set(memberData.name);
-      if(memberData.birthday) modal.types.editMember.elements.birthday.set(memberData.birthday);
+      modal.types.editMember.elements.socials.set(memberData.telegram, memberData.instagram);
+      modal.types.editMember.elements.birthday.set(memberData.birthday);
       modal.types.editMember.elements.activityIndicator.set(memberData.active);
       modal.types.editMember.elements.statusDots.set(memberData.status);
-      if(memberData.rec_season || memberData.rec_year) modal.types.editMember.elements.recruitment.set(memberData.rec_season, memberData.rec_year);
-      if(memberData.family_id) modal.types.editMember.elements.family.set(memberData.family_id);
+      modal.types.editMember.elements.recruitment.set(memberData.rec_season, memberData.rec_year);
+      modal.types.editMember.elements.education.set(memberData.faculty, memberData.year_of_studying);
+      modal.types.editMember.elements.family.set(memberData.family_id);
     });
   },
   closer: function() {
@@ -284,15 +332,22 @@ modal.addType('changeParent', {
     searchField: {
       node: document.querySelector('#changeParent .searchField'),
       init: function() {
-        familyTree.configureSearchField(modal.types.changeParent.elements.searchField.node, 'backend/findMentorsByName.php', function(mentor) {
-          if(modal.types.changeParent.memberData.newParent != mentor.id) {
-            if(modal.types.changeParent.memberData.currentParent == mentor.id)
-              modal.types.changeParent.memberData.newParent = null;
-            else
-              modal.types.changeParent.memberData.newParent = mentor.id;
-            
-            modal.types.changeParent.elements.currentParent.set(mentor.name);
-          };
+        new DropDownSearch(modal.types.changeParent.elements.searchField.node, '/backend/findMentorsByName.php', function(mentor) {
+          const block = document.createElement('div');
+          block.classList.add('answer');
+          block.textContent = mentor.name;
+          block.addEventListener('click', function() {
+            if(modal.types.changeParent.memberData.newParent != mentor.id) {
+              if(modal.types.changeParent.memberData.currentParent == mentor.id)
+                modal.types.changeParent.memberData.newParent = null;
+              else
+                modal.types.changeParent.memberData.newParent = mentor.id;
+
+              modal.types.changeParent.elements.currentParent.set(mentor.name);
+            };
+          });
+
+          return block;
         });
       }
     },

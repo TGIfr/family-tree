@@ -248,6 +248,69 @@ button:hover {
   left: 13px;
 }
 
+#memberInfo .socials {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  display: flex;
+}
+
+#memberInfo .socials a {
+  display: block;
+  width: 20px;
+  height: 20px;
+  margin: 0 2px;
+  background-repeat: no-repeat;
+  background-size: contain;
+}
+
+#memberInfo .socials a.telegram {
+  background-image: url(../img/telegram.svg);
+}
+
+#memberInfo .socials a.instagram {
+  background-image: url(../img/instagram.svg);
+}
+
+#memberInfo .socials a.hidden {
+  display: none;
+}
+
+#editMember .editSocials {
+  position: absolute;
+  top: 22px;
+  right: 20px;
+  font-size: 12px;
+  color: #aaa;
+  cursor: pointer;
+}
+
+#editMember .socials {
+  cursor: default;
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 3;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,.3);
+  padding: 10px 15px 5px;
+  border-radius: 5px;
+  width: 100px;
+}
+
+#editMember .editSocials:hover .socials {
+  display: block;
+}
+
+#editMember .socials > div {
+  margin-bottom: 10px;
+}
+
+#editMember .socials input {
+  width: 95px;
+}
+
 #memberInfo .status,
 #editMember .status {
   margin: 20px 0 5px;
@@ -320,30 +383,39 @@ button:hover {
   color: #777;
 }
 
+#editMember .caption {
+  margin-bottom: .5vw;
+}
+
 #editMember .value,
 #memberInfo .value {
   font-weight: bold;
   font-size: 14px;
   color: #333;
+  display: flex;
+  justify-content: space-between;
 }
 
-#editMember .caption {
-  margin-bottom: .5vw;
+#editMember .value select {
+  height: 20px;
 }
 
-#editMember select {
+#editMember .value select,
+#editMember .value input {
   font-size: 12px;
 }
 
 #memberInfo .recruitment,
 #memberInfo .family,
-#memberInfo .birthday {
+#memberInfo .birthday,
+#memberInfo .education {
   padding-left: 40px;
 }
 
 #memberInfo .recruitment:before,
 #memberInfo .family .logo,
-#memberInfo .birthday:before {
+#memberInfo .birthday:before,
+#memberInfo .education:before {
   content: '';
   position: absolute;
   left: 0;
@@ -364,7 +436,8 @@ button:hover {
   background-image: url(../img/spring.svg);
 }
 
-#editMember .recruitment select {
+#editMember .recruitment select,
+#editMember .education select {
   width: 48%;
 }
 
@@ -393,12 +466,15 @@ button:hover {
 }
 
 #editMember .birthday .value input {
-  width: 25%;
-  margin-right: 2px;
+  width: 24%;
 }
 
 #editMember .birthday .value input.year {
-  width: 50%;
+  width: 38%;
+}
+
+#memberInfo .education:before {
+  background-image: url(../img/education.svg);
 }
 
 #editMember .butonsContainer {
@@ -503,7 +579,12 @@ button:hover {
 @media screen and (max-width: 420px) {
   #modal .content .row > div {
     width: auto;
+    min-width: 50%;
     max-width: 100%;
+  }
+  
+  #editMember.content .row > div {
+    width: 100%;
   }
   
   #modal .content {
