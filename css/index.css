@@ -17,18 +17,18 @@ body, html {
   background: transparent;
 }
 
-.mountBlock {
+#mountBlock {
   height: 100%;
   width: 100vw;
   cursor: grab;
 }
 
-.mountBlock.grabbing {
+#mountBlock.grabbing {
   user-select: none;
   cursor: grabbing;
 }
 
-.mountBlock .scroll-content {
+#mountBlock .scroll-content {
   text-align: center;
   height: 100%;
 }

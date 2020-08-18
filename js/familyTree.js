@@ -1,35 +1,233 @@
 'use strict';
 
+const checkHRstatus = () => true;
+
 const statuses = ['Observer', 'Baby', 'Full', 'Alumni']; //назви статусів бестіків
 const recSeasons = ['Spring', 'Autumn']; //назви сезонів рекрутменту
+const animationDelay = 500;
 
-class FamilyTree {
-  constructor(mountBlock, HR_mode) {
-    this.animationDelay = 500;
+class Member {
+  constructor(memberData, parent = null) {
+    this.parent = parent;
+    this.id = memberData.id;
+    this.active = memberData.active;
+    this.image = memberData.image;
+    this.name = memberData.name;
+    this.status = memberData.status;
+    this.node = this.createHTMLnode();
+  }
+  
+  createHTMLnode() {
+    if(this.node) return;
     
-    this.mountBlock = {
-      node: mountBlock, //html блок в якому буде побудуване дерево
-      scrollBar: null //об'єкт Scrollbar блоку в якому буде побудоване дерево
+    //блок нового мембера
+    const member = document.createElement('div');
+    member.classList.add('member');
+    //надання унікального ідентифікатору для можливості пошуку
+    member.setAttribute('id', 'member' + this.id);
+    
+    //позначення мембера активним
+    if(this.active) member.classList.add('active');
+    this.activate = () => {
+      member.classList.add('active');
+      this.active = true;
+    };
+    this.deactivate = () => {
+      member.classList.remove('active');
+      this.active = false;
     };
     
-    if(HR_mode) this.checkHRstatus();
-    else this.init();
+    //блок що містить всі дані
+    const description = document.createElement('div');
+    description.classList.add('description');
+    
+    //блок з зображенням мембера
+    const picture = document.createElement('div');
+    picture.classList.add('picture');
+    description.append(picture);
+    
+    this.loadPicture = () => {
+      if(this.image && !picture.firstChild) {
+        const image = document.createElement('img');
+        image.src = 'img/members/' + this.image;
+        picture.append(image);
+      };
+    };
+    
+    this.setPicture = fileName => {
+      if(fileName == this.image) return;
+      this.image = fileName;
+      if(!this.image) {
+        const image = document.createElement('img');
+        image.src = 'img/members/' + fileName;
+        picture.append(image);
+      }
+      else picture.firstChild.src = 'img/members/' + fileName;
+    };
+
+    //блок з іменем мембера
+    const name = document.createElement('div');
+    name.classList.add('name');
+    name.textContent = this.name;
+    description.append(name);
+    this.setName = newName => {
+      if(newName == this.name) return;
+      this.name = newName;
+      name.textContent = newName;
+    };
+
+    //блок зі статусом мембера
+    const status = document.createElement('div');
+    status.classList.add('status');
+    status.textContent = statuses[this.status];
+    description.append(status);
+    this.setStatus = newStatus => {
+      if(newStatus == this.status) return;
+      status.textContent = statuses[newStatus];
+      this.name = newStatus;
+    };
+    
+    //відкрити спливаюче вікно з інформацією при кліку на опис мембера
+    description.onclick = (function(e) {
+      e.stopPropagation();
+      modal.open(checkHRstatus() ? 'editMember' : 'memberInfo', { memberId: this.id });
+    }).bind(this);
+    
+    //режим редагування дерева
+    if(checkHRstatus()) {
+      //блок що містить всі кнопки редагування
+      const settings = document.createElement('div');
+      settings.classList.add('settings');
+      
+      //кнопка що відкриває модальне вікно для зміни ментора
+      const changeParent = document.createElement('div');
+      changeParent.classList.add('changeParent');
+      changeParent.setAttribute('title', 'Змінити ментора');
+      changeParent.onclick = (function(e) {
+        e.stopPropagation();
+        modal.open('changeParent', { memberId: this.id });
+      }).bind(this);
+      settings.append(changeParent);
+      
+      //кнопка що відкриває модальне вікно для видалення мембера
+      const removeMember = document.createElement('div');
+      removeMember.classList.add('removeMember');
+      removeMember.setAttribute('title', 'Видалити мембера');
+      removeMember.onclick = (function(e) {
+        e.stopPropagation();
+        modal.open('removeConfirmation', { memberId: this.id });
+      }).bind(this);
+      settings.append(removeMember);
+      
+      //якщо мембер є фулом чи алюмні, то додати кнопку що створює дитину
+      const addChild = document.createElement('div');
+      addChild.classList.add('addChild');
+      addChild.setAttribute('title', 'Додати дитину');
+      addChild.onclick = (function(e) {
+        e.stopPropagation();
+        familyTree.createNewMember(this);
+      }).bind(this);
+      if(this.status < 2) addChild.classList.add('hidden');
+      settings.append(addChild);
+      this.showAddChildButton = () => addChild.classList.remove('hidden');
+      this.hideAddChildButton = () => addChild.classList.add('hidden');
+      
+      description.append(settings);
+    };
+    
+    //скасовує перетягування полотна якщо клік відбувається на описі мембера
+    description.onmousedown = function(e) {e.stopPropagation()};
+    
+    member.append(description);
+    
+    return member;
   }
   
-  checkHRstatus() {
-    let password = prompt("А який пароль?");
-    ajaxQuery('/backend/checkPassword.php', 'pass='+password, (function(response) {
-      if(response) {
-        this.HR_mode = !!response;
-        this.init();
-      }
-      else window.location.href = '/';
-    }).bind(this));
+  addChild(child) {
+    child.parent = this;
+    if(!this.children) {
+      this.children = [];
+      this.addChildrenBlock();
+    };
+    this.children.push(child);
+    this.pushMemberToChildrenBlock(child);
   }
+  
+  removeChild(childToRemove) {
+    this.children = this.children.filter(child => child.id != childToRemove.id);
+    if(!this.children[0])
+      this.removeChildrenBlock();
+  }
+  
+  //створення блоку з дітьми мембера
+  addChildrenBlock() {
+    const childrenBlock = document.createElement('div');
+    childrenBlock.classList.add('children');
+    this.pushMemberToChildrenBlock = member => childrenBlock.append(member.node);
+    this.removeChildrenBlock = () => childrenBlock.remove();
+    
+    const openerButton = document.createElement('div');
+    openerButton.classList.add('opener');
+    openerButton.textContent = '+';
+    
+    this.showChildrenBlock = () => {
+      this.children.forEach(child => child.loadPicture());
+      childrenBlock.classList.add('visible');
+      openerButton.textContent = '-';
+    };
+    
+    this.hideChildrenBlock = () => {
+      childrenBlock.classList.remove('visible');
+      openerButton.textContent = '+';
+      this.children.forEach(child => !child.children || child.hideChildrenBlock());
+    };
+    
+    openerButton.onclick = () => {
+      childrenBlock.classList.contains('visible') ? this.hideChildrenBlock() : this.showChildrenBlock();
+
+      //затримка для анімації
+      setTimeout((function() {
+        familyTree.mountBlock.scrollBar.update();
+        familyTree.mountBlock.scrollBar.scrollIntoView(openerButton, {
+          offsetLeft: window.innerWidth/2,
+          offsetTop: window.innerHeight/2
+        });
+      }).bind(this), animationDelay);
+    };
+
+    //скасовує перетягування полотна якщо клік відбувається на кнопці розгортання
+    openerButton.onmousedown = function(e) {e.stopPropagation()};
+    
+    this.node.append(openerButton);
+    this.node.append(childrenBlock);
+  }
+  
+  change(newMemberData) {
+    if(newMemberData.active === true) this.activate();
+    if(newMemberData.active === false) this.deactivate();
+    if(newMemberData.name) this.setName(newMemberData.name);
+    if(newMemberData.image) this.setPicture(newMemberData.image);
+    if(newMemberData.status) {
+      this.setStatus(newMemberData.status);
+      newMemberData.status < 2 ? this.hideAddChildButton() : this.showAddChildButton();
+    };
+  }
+  
+  remove() {
+    this.node.remove();
+    if(this.children) this.children.forEach(child => child.remove());
+    this.parent.removeChild(this);
+  }
+};
+
+const familyTree = {
+  members: [],
+  mountBlock: {
+    node: document.getElementById('mountBlock'), //html блок в якому буде побудуване дерево
+    scrollBar: null
+  },
   
   init() {
-    const familyTree = this;
-    
     ajaxQuery('/backend/getAllMembersData.php', null, function(response) {
       familyTree.generate(JSON.parse(response));
       familyTree.configureMountBlock();
@@ -43,388 +241,155 @@ class FamilyTree {
         return block;
       });
     });
-  };
+  },
   
   resetHighlightedMember() {
     const hightlighted = document.querySelector('.highlighted');
     if(hightlighted) hightlighted.classList.remove('highlighted');
-  };
+  },
+  
+  getMemberById(id) {
+    return familyTree.members.filter(member => member.id == id)[0];
+  },
   
   showMember(id) {
-    this.resetHighlightedMember();
+    familyTree.resetHighlightedMember();
     
-    //пошук блоку з таким ідентифікатором
-    const memberBlock = this.getMemberBlockById(id);
-
-    let parentBlock = this.getParentBlockById(id); //батьківський блок мембера
+    const member = this.getMemberById(id);
     
-    if(parentBlock) {
-      let childrenBlock = parentBlock.querySelector('.children'); //блок дітей в якому знаходить шуканий мембер
-
-      //поки існує батьківський блок
+    if(member.parent) {
+      let parentBlock = member.parent;
+      
       while(parentBlock) {
-        //якщо блок дітей скритий то відкрити його
-        if(!childrenBlock.classList.contains('visible'))
-          this.toggleChildrenBlock(parentBlock);
-
-        //перехід на попереднє покоління
-        childrenBlock = parentBlock.parentNode;
-        parentBlock = childrenBlock.closest('.member');
+        parentBlock.showChildrenBlock();
+        parentBlock = parentBlock.parent;
       };
     };
 
-    const memberBlockDescription = memberBlock.querySelector('.description');
-    setTimeout((function() {
+    const memberBlockDescription = member.node.querySelector('.description');
+    setTimeout(function() {
+      familyTree.mountBlock.scrollBar.update();
+      
       //виділення шуканого мембера
-      memberBlock.classList.add('highlighted');
+      member.node.classList.add('highlighted');
 
       //скролити до місця де знаходиться блок з шуканим id
-      this.mountBlock.scrollBar.scrollIntoView(memberBlockDescription, {
+      familyTree.mountBlock.scrollBar.scrollIntoView(memberBlockDescription, {
         offsetLeft: (window.innerWidth - memberBlockDescription.offsetWidth)/2, //центрування екрану по горизонталі
         offsetTop: (window.innerHeight - memberBlockDescription.offsetHeight)/2 //центрування екрану по вертикалі
       });
-    }).bind(this), this.animationDelay);
-  };
+    }, animationDelay);
+  },
   
-  //отримати DOM елемент мембера з id
-  getMemberBlockById(id) {
-    return document.getElementById('member'+id);
-  }
-  
-  //отримати DOM елемент ментора мембера з id
-  getParentBlockById(id) {
-    return this.getMemberBlockById(id).parentNode.closest('.member');
-  }
+  createNewMember(parentMember) {
+    ajaxQuery('backend/createMember.php', 'parent_id='+parentMember.id, function(id) {
+      const child = new Member({
+        id: id,
+        active: true,
+        name: 'Новий мембер',
+        status: 0
+      }, parentMember);
+      
+      familyTree.members.push(child);
+      parentMember.addChild(child);
+      
+      familyTree.showMember(id);
+      
+      modal.open('editMember', { memberId: id });
+    });
+  },
   
   changeMember(newMemberData) {
-    if(!this.HR_mode) return;
+    if(!checkHRstatus()) return;
     
-    const memberBlock = this.getMemberBlockById(newMemberData.id);
-    
-    if(newMemberData.image) {
-      var pictureBlock = memberBlock.querySelector('.picture');
-      var imgBlock = pictureBlock.querySelector('img');
-      if(!imgBlock) {
-        var imgBlock = document.createElement('img');
-        pictureBlock.append(imgBlock)
-      };
-      imgBlock.src = 'img/members/' + newMemberData.image;
-    };
-    
-    if(newMemberData.name)
-      memberBlock.querySelector('.name').textContent = newMemberData.name;
-    
-    if(newMemberData.active === true)
-      memberBlock.classList.add('active');
-    else if(newMemberData.active === false)
-      memberBlock.classList.remove('active');
-    
-    if(newMemberData.status !== undefined) {
-      memberBlock.querySelector('.status').textContent = statuses[newMemberData.status];
-      
-      const addChild = memberBlock.querySelector('.settings .addChild');
-      if(newMemberData.status < 2) addChild.classList.add('hidden');
-      else addChild.classList.remove('hidden');
-    };
-  }
+    const memberBlock = this.getMemberById(newMemberData.id).change(newMemberData);
+  },
   
   //видалити мембера з id
   //якщо cascade = true то видалити також всіх нащадків
   //якщо cascade = false то всім дітям дати нового ментора, що є батьком мембера з id
   removeMember(id, cascade) {
-    if(!this.HR_mode) return;
+    if(!checkHRstatus()) return;
     
     var props = 'id='+id;
     if(cascade) props += '&cascade=true';
 
-    ajaxQuery('backend/removeMemberById.php', props, (function() {
-      const memberBlock = this.getMemberBlockById(id);
-      const parentBlock = this.getParentBlockById(id);
-      const memberHabitation = parentBlock ? parentBlock.querySelector('.children') : memberBlock.parentNode;
+    ajaxQuery('backend/removeMemberById.php', props, function() {
+      const memberBlock = familyTree.getMemberById(id);
 
-      if(!cascade) {
-        const children = memberBlock.querySelector('.children').childNodes;
-        children.forEach(function(child) {
-          memberHabitation.appendChild(child);
-        });
-      };
+      if(!cascade)
+        memberBlock.children.forEach(child => child.changeParent(memberBlock.parent));
 
       memberBlock.remove();
-
-      if(parentBlock && !memberHabitation.childNodes.length) {
-        parentBlock.querySelector('.opener').remove();
-        memberHabitation.remove();
-      };
+      familyTree.members = familyTree.members.filter(member => member.id != id);
       
       modal.close();
-    }).bind(this));
-  }
+    });
+  },
   
   changeParent(id, newParentId) {
-    if(!this.HR_mode) return;
+    if(!checkHRstatus()) return;
     
-    const memberBlock = this.getMemberBlockById(id);
-    const parentBlock = this.getParentBlockById(id);
-    const memberHabitation = parentBlock ? parentBlock.querySelector('.children') : memberBlock.parentNode;
-
-    const newParentBlock = this.getMemberBlockById(newParentId);
-    var newMemberHabitation = newParentBlock ? newParentBlock.querySelector('.children') : document.getElementById('familyTree');
-
-    if(!newMemberHabitation) {
-      newMemberHabitation = this.createChildrenBlock(newParentBlock);
-      newParentBlock.append(newMemberHabitation);
-    };
-
-    newMemberHabitation.appendChild(memberBlock);
-
-    if(parentBlock && !memberHabitation.childNodes.length) {
-      parentBlock.querySelector('.opener').remove();
-      memberHabitation.remove();
-    };
-  }
+    familyTree.getMemberById(newParentId).addChild(familyTree.getMemberById(id));
+  },
   
-  addNewChild(parentId) {
-    ajaxQuery('backend/createMember.php', 'parent_id='+parentId, (function(id) {
-      const child = this.createMemberBlock({
-        id: id,
-        active: true,
-        name: 'Новий мембер',
-        status: 0
-      });
-      const parentBlock = this.getMemberBlockById(parentId);
+  buildBranches(membersData, parentMember = null) {
+    membersData.forEach(memberData => {
+      const newMember = new Member(memberData, parentMember);
       
-      var childrenBlock = parentBlock.querySelector('.children');
-      if(!childrenBlock) {
-        childrenBlock = familyTree.createChildrenBlock(parentBlock);
-        parentBlock.append(childrenBlock);
+      if(memberData.children)
+        familyTree.buildBranches(memberData.children, newMember);
+      
+      if(parentMember) parentMember.addChild(newMember);
+      else {
+        newMember.loadPicture();
+        familyTree.node.append(newMember.node);
       };
       
-      childrenBlock.append(child);
-      this.showMember(id);
-      
-      modal.open('editMember', {memberId: id});
-    }).bind(this));
-  }
-  
-  //приховати/показати дітей мембера
-  toggleChildrenBlock(parent) {
-    var childrenBlock = parent.querySelector('.children');
-    //якщо існує блок з дітьми
-    if(childrenBlock) {
-      //зробити його видимим
-      childrenBlock.classList.toggle('visible');
-      
-      //кнопці відкривання надати значення "-"
-      var opener = parent.querySelector('.opener');
-      opener.textContent = opener.textContent == '+' ? '-' : '+';
-      
-      //якщо блок приховується
-      if(!childrenBlock.classList.contains('visible')) {
-        //знайти всіх нащадків
-        const posterity = childrenBlock.querySelectorAll('.member');
-        
-        //кожному нащадку приховати блок з дітьми
-        [].forEach.call(posterity, function(childrenMember) {
-          childrenBlock = childrenMember.querySelector('.children');
-          if(childrenBlock) {
-            childrenBlock.classList.remove('visible');
-            childrenMember.querySelector('.opener').textContent = '+';
-          }
-        });
-      }
-      
-      //затримка для анімації
-      setTimeout((function() {
-        //оновлення скролбарів при зміні розміру дерева
-        this.mountBlock.scrollBar.update();
-      }).bind(this), this.animationDelay);
-    };
-  };
-  
-  //додати кнопку "показати дітей" для блоку мембера
-  addChildrenOpenerButton(parent) {
-    const button = document.createElement('div');
-    button.classList.add('opener');
-    button.textContent = '+';
-    button.onclick = (function(e) {
-      e.stopPropagation();
-      this.toggleChildrenBlock(parent);
-      
-      setTimeout((function(){
-        this.mountBlock.scrollBar.scrollIntoView(button, {
-          offsetLeft: window.innerWidth/2,
-          offsetTop: window.innerHeight/2
-        });
-      }).bind(this), this.animationDelay);
-    }).bind(this);
-
-    //скасовує перетягування полотна якщо клік відбувається на кнопці розгортання
-    button.onmousedown = function(e) {e.stopPropagation()};
-    
-    parent.append(button);
-  }
-  
-  //створення блоку з дітьми мембера
-  createChildrenBlock(parent) {
-    const block = document.createElement('div');
-    block.classList.add('children');
-
-    //кнопка для розгортання блоку з дітьми
-    this.addChildrenOpenerButton(parent);
-    
-    return block;
-  }
-  
-    //створення блоку мембера з даними які є в об'єкті memberData
-  createMemberBlock(memberData) {
-    //блок нового мембера
-    const member = document.createElement('div');
-    member.classList.add('member');
-    //надання унікального ідентифікатору для можливості пошуку
-    member.setAttribute('id', 'member' + memberData.id);
-    
-    //позначення мембера активним
-    if(memberData.active) member.classList.add('active');
-    
-    //блок що містить всі дані
-    const description = document.createElement('div');
-    description.classList.add('description');
-    
-    //блок з зображенням мембера
-    const picture = document.createElement('div');
-    picture.classList.add('picture');
-    if(memberData.image) {
-      const image = document.createElement('img');
-      image.src = 'img/members/' + memberData.image;
-      picture.append(image);
-    };
-    description.append(picture);
-
-    //блок з іменем мембера
-    const name = document.createElement('div');
-    name.classList.add('name');
-    name.textContent = memberData.name;
-    description.append(name);
-
-    //блок зі статусом мембера
-    const status = document.createElement('div');
-    status.classList.add('status');
-    status.textContent = statuses[memberData.status];
-    description.append(status);
-    
-    //відкрити спливаюче вікно з інформацією при кліку на опис мембера
-    description.onclick = (function(e) {
-      e.stopPropagation();
-      modal.open(this.HR_mode ? 'editMember' : 'memberInfo', {memberId: memberData.id});
-    }).bind(this);
-    
-    //режим редагування дерева
-    if(this.HR_mode) {
-      //блок що містить всі кнопки редагування
-      const settings = document.createElement('div');
-      settings.classList.add('settings');
-      
-      //кнопка що відкриває модальне вікно для зміни ментора
-      const changeParent = document.createElement('div');
-      changeParent.classList.add('changeParent');
-      changeParent.setAttribute('title', 'Змінити ментора');
-      changeParent.onclick = function(e) {
-        e.stopPropagation();
-        modal.open('changeParent', {memberId: memberData.id});
-      };
-      settings.append(changeParent);
-      
-      //кнопка що відкриває модальне вікно для видалення мембера
-      const removeMember = document.createElement('div');
-      removeMember.classList.add('removeMember');
-      removeMember.setAttribute('title', 'Видалити мембера');
-      removeMember.onclick = function(e) {
-        e.stopPropagation();
-        modal.open('removeConfirmation', {memberId: memberData.id});
-      };
-      settings.append(removeMember);
-      
-      //якщо мембер є фулом чи алюмні, то додати кнопку що створює дитину
-      const addChild = document.createElement('div');
-      addChild.classList.add('addChild');
-      addChild.setAttribute('title', 'Додати дитину');
-      addChild.onclick = (function(e) {
-        e.stopPropagation();
-        this.addNewChild(memberData.id);
-      }).bind(this);
-      if(memberData.status < 2) addChild.classList.add('hidden');
-      settings.append(addChild);
-      
-      description.append(settings);
-    };
-    
-    //скасовує перетягування полотна якщо клік відбувається на описі мембера
-    description.onmousedown = function(e) {e.stopPropagation()};
-    
-    member.append(description);
-    
-    return member;
-  }
-  
-  //побудова дерева нащадків
-  buildMemberPosterityTree(mountBlock, memberData) {
-    const newMember = this.createMemberBlock(memberData);
-    
-    //якщо в мембера є діти - заходимо в рекурсію
-    if(memberData.children) {
-      const parent = newMember;
-      const childrenBlock = this.createChildrenBlock(parent);
-      //будуємо дерево всіх нащадків для кожного з дітей
-      memberData.children.forEach(this.buildMemberPosterityTree.bind(this, childrenBlock));
-      parent.append(childrenBlock);
-    };
-    
-    mountBlock.append(newMember);
-  }
+      familyTree.members.push(newMember);
+    });
+  },
   
   generate(membersData) {
-    const familyTree = document.createElement('div');
-    familyTree.id = 'familyTree';
-
-    //побудува дерева нащадків для кожного з мемберів з першого покоління
-    membersData.forEach(this.buildMemberPosterityTree.bind(this, familyTree));
-
-    this.mountBlock.node.classList.add('mountBlock');
-    this.mountBlock.node.append(familyTree);
-  }
+    familyTree.node = document.createElement('div');
+    familyTree.node.id = 'familyTree';
+    familyTree.buildBranches(membersData);
+    familyTree.mountBlock.node.append(familyTree.node);
+  },
   
   configureMountBlock() {
-    this.mountBlock.scrollBar = Scrollbar.init(this.mountBlock.node, scrollbarOptions);
-    const mountBlock = this.mountBlock;
+    familyTree.mountBlock.scrollBar = Scrollbar.init(familyTree.mountBlock.node, scrollbarOptions);
     
     //перетягування полотна мишкою
     if(window.innerWidth > 800) { //лише для десктопу
       var clicked = false;
       var clickCoords = {x: 0, y:0};
 
-      mountBlock.node.onmousedown = (function(e) {
-        mountBlock.node.classList.add('grabbing');
+      familyTree.mountBlock.node.onmousedown = function(e) {
+        familyTree.mountBlock.node.classList.add('grabbing');
         clicked = true;
         clickCoords.x = e.pageX;
         clickCoords.y = e.pageY;
-      }).bind(this);
+      };
 
-      mountBlock.node.onmouseup = this.mountBlock.onmouseleave = function() {
-        mountBlock.node.classList.remove('grabbing');
+      familyTree.mountBlock.node.onmouseup = familyTree.mountBlock.node.onmouseleave = function() {
+        familyTree.mountBlock.node.classList.remove('grabbing');
         clicked = false;
       };
 
-      mountBlock.node.onmousemove = function(e) {
+      familyTree.mountBlock.node.onmousemove = function(e) {
         if(clicked) {
-          const offsetX = mountBlock.scrollBar.offset.x + clickCoords.x - e.pageX;
-          const offsetY = mountBlock.scrollBar.offset.y + clickCoords.y - e.pageY;
+          const offsetX = familyTree.mountBlock.scrollBar.offset.x + clickCoords.x - e.pageX;
+          const offsetY = familyTree.mountBlock.scrollBar.offset.y + clickCoords.y - e.pageY;
           clickCoords.x = e.pageX;
           clickCoords.y = e.pageY;
-          mountBlock.scrollBar.scrollTo(offsetX, offsetY, 0);
+          familyTree.mountBlock.scrollBar.scrollTo(offsetX, offsetY, 0);
         };
       };
     };
     
-    document.addEventListener('click', this.resetHighlightedMember);
+    document.addEventListener('click', familyTree.resetHighlightedMember);
   }
-}
+};
+
+familyTree.init();

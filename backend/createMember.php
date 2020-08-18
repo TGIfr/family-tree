@@ -14,7 +14,7 @@ $family = $res->fetch_assoc()['family_id'];
 
 if(!$family) $family = 'NULL';
 
-$connection->query("INSERT INTO member(name, rec_season, rec_year, mentor_id, family_id) VALUES ('Новий мембер', $season ,$year , $parent_id, $family)");
+$connection->query("INSERT INTO member(name, rec_season, rec_year, mentor_id, family_id) VALUES ('Новий мембер', $season , $year, $parent_id, $family)");
 
 echo $connection->insert_id;
 

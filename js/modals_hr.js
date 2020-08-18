@@ -18,6 +18,7 @@ modal.addType('editMember', {
       node: document.querySelector('#editMember .picture .imageLoad'),
       clear: function() {
         modal.types.editMember.elements.imgInput.node.value = '';
+        ajaxQuery('backend/deleteTempPicture.php', 'id='+modal.types.editMember.memberData.current.id);
       },
       init: function() {
         modal.types.editMember.elements.imgInput.node.onchange = function(e) {
@@ -290,8 +291,6 @@ modal.addType('editMember', {
     for(let element in modal.types.editMember.elements)
       if(modal.types.editMember.elements[element].clear)
         modal.types.editMember.elements[element].clear();
-    
-    ajaxQuery('backend/deleteTempPicture.php', 'id='+modal.types.editMember.memberData.current.id);
     
     modal.types.editMember.memberData.current = modal.types.editMember.memberData.new = {};
   },
