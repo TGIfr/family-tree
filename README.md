@@ -8,3 +8,9 @@
   * faculty
   * membership status
 * Has admin panel for HRs
+
+
+# Deploy:
+* Copy files to our hosting
+* ???
+* Profit!
